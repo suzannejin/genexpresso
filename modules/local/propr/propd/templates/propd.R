@@ -469,7 +469,7 @@ if (opt\$permutation == 0) {
 
     pd <- updateCutoffs(
         pd,
-        number_of_cutoffs = 100,
+        number_of_cutoffs = opt\$number_of_cutoffs,
         ncores = opt\$ncores
     )
 
