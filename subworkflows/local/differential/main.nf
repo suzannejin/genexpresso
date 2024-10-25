@@ -39,6 +39,9 @@ workflow DIFFERENTIAL {
     // Perform differential analysis with propd
     // ----------------------------------------------------
 
+    // TODO propd currently don't support blocking, so we should not run propd with same contrast_variable, reference and target,
+    // but different blocking variable, since it will simply run the same analysis again.
+
     ch_counts
         .join(ch_samplesheet)
         .combine(ch_contrasts)
