@@ -731,7 +731,7 @@
                 },
                 "limma_use_voom": {
                     "type": "boolean",
-                    "description": "Turns on and off usage of voom normalisation in limma module.",
+                    "description": "Turns on and off usage of voom normalisation in the Limma module.",
                     "default": false,
                     "fa_icon": "far fa-check-square"
                 }
