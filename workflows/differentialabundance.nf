@@ -637,7 +637,7 @@ workflow DIFFERENTIALABUNDANCE {
     def params_pattern = "report|gene_sets|study|observations|features|filtering|exploratory|differential"
     if (params.study_type == 'rnaseq'){
         if (params.differential_use_limma){
-            params_pattern += "|lima"
+            params_pattern += "|limma"
         } else {
             params_pattern += "|deseq2"
         }
