@@ -26,9 +26,9 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
-     inkscape:zoom="0.60956724"
-     inkscape:cx="514.29929"
-     inkscape:cy="631.59562"
+     inkscape:zoom="2.0821608"
+     inkscape:cx="882.01641"
+     inkscape:cy="774.676"
      inkscape:window-width="1312"
      inkscape:window-height="1033"
      inkscape:window-x="94"
@@ -331,7 +331,7 @@
          id="tspan9">Validate</tspan></text>
     <text
        xml:space="preserve"
-       transform="matrix(0.26458333,0,0,0.26458333,177.0313,166.21407)"
+       transform="matrix(0.26458333,0,0,0.26458333,177.0313,165.6849)"
        id="text11804-3-3-5-0-9-2"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:24px;font-family:monospace;-inkscape-font-specification:monospace;text-align:center;white-space:pre;shape-inside:url(#rect11806-1-0-6-7-6-2);display:inline;fill:#000000;stroke:none;stroke-opacity:1"
        x="147.9375"
@@ -1282,21 +1282,14 @@
        width="33.757362"
        height="2.6459999"
        x="241.03331"
-       y="231.0027" />
+       y="229.94438" />
     <rect
        style="fill:#0000ff;fill-opacity:1;stroke:none;stroke-width:0.271878"
        id="rect1-9-5-0-0-9-3-6"
        width="33.757362"
        height="2.6459999"
        x="241.00972"
-       y="233.55562" />
-    <rect
-       style="fill:#aa0000;fill-opacity:1;stroke:none;stroke-width:0.271878"
-       id="rect1-9-5-0-0-9-7-0"
-       width="33.757362"
-       height="2.6459999"
-       x="241.04543"
-       y="228.37111" />
+       y="232.4973" />
     <rect
        style="fill:#0000ff;fill-opacity:1;stroke:none;stroke-width:0.271877"
        id="rect1-9-5-0-0-1"
@@ -1313,6 +1306,13 @@
        x="222.14438"
        y="-241.11391"
        transform="rotate(90)" />
+    <rect
+       style="fill:#aa0000;fill-opacity:1;stroke:none;stroke-width:0.272006"
+       id="rect1-9-5-0-0-9-7-0"
+       width="33.789036"
+       height="2.6459999"
+       x="241.01375"
+       y="227.31279" />
     <path
        style="fill:none;stroke:#0000ff;stroke-width:2.64583;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="m 226.81466,217.08911 h 3.22004 c 2.40007,0 4.74297,1.4653 6.44007,3.09818 1.61003,1.54907 3.22005,3.8871 3.22005,6.19634 v 3.09818"
@@ -1587,6 +1587,14 @@
        id="path3447-6-0-9-30-9-1-7-3-1-5-2"
        style="fill:#ffffff;stroke:#000000;stroke-width:2.64583;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;paint-order:stroke markers fill"
        r="2.6458333" />
+    <rect
+       style="fill:#01862e;fill-opacity:1;stroke:none;stroke-width:0.351062"
+       id="rect1-9-5-0-0-9-3-1-9-0-4"
+       width="33.346626"
+       height="2.6459999"
+       x="-274.22534"
+       y="-237.69055"
+       transform="scale(-1)" />
     <circle
        cy="232.15164"
        cx="239.54242"
