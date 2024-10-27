@@ -45,6 +45,7 @@ On release, automated continuous integration tests run the pipeline on a full-si
 RNA-seq:
 
 with deseq2:
+
 ```bash
  nextflow run nf-core/differentialabundance \
      --input samplesheet.csv \
@@ -56,6 +57,7 @@ with deseq2:
 ```
 
 with limma+voom
+
 ```bash
  nextflow run nf-core/differentialabundance \
      --input samplesheet.csv \
