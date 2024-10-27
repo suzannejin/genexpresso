@@ -44,6 +44,7 @@ On release, automated continuous integration tests run the pipeline on a full-si
 
 RNA-seq:
 
+with deseq2:
 ```bash
  nextflow run nf-core/differentialabundance \
      --input samplesheet.csv \
@@ -52,6 +53,17 @@ RNA-seq:
      --gtf mouse.gtf \
      --outdir <OUTDIR>  \
      -profile rnaseq,<docker/singularity/podman/shifter/charliecloud/conda/institute>
+```
+
+with limma+voom
+```bash
+ nextflow run nf-core/differentialabundance \
+     --input samplesheet.csv \
+     --contrasts contrasts.csv \
+     --matrix assay_matrix.tsv \
+     --gtf mouse.gtf \
+     --outdir <OUTDIR>  \
+     -profile rnaseq_limma,<docker/singularity/podman/shifter/charliecloud/conda/institute>
 ```
 
 :::note
