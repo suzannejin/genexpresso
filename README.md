@@ -43,6 +43,7 @@ On release, automated continuous integration tests run the pipeline on a full-si
 > If you are new to Nextflow and nf-core, please refer to [this page](https://nf-co.re/docs/usage/installation) on how to set-up Nextflow. Make sure to [test your setup](https://nf-co.re/docs/usage/introduction#how-to-run-a-pipeline) with `-profile test` before running the workflow on actual data.
 
 RNA-seq with deseq2:
+
 ```bash
  nextflow run nf-core/differentialabundance \
      --input samplesheet.csv \
@@ -52,6 +53,7 @@ RNA-seq with deseq2:
      --outdir <OUTDIR>  \
      -profile rnaseq,<docker/singularity/podman/shifter/charliecloud/conda/institute>
 ```
+
 :::note
 If you are using the outputs of the nf-core rnaseq workflow as input here **either**:
 
@@ -59,6 +61,7 @@ If you are using the outputs of the nf-core rnaseq workflow as input here **eith
 - **or** supply the **gene_counts_length_scaled.tsv** or **gene_counts_scaled.tsv** matrices.
 
 RNA-seq limma+voom:
+
 ```bash
  nextflow run nf-core/differentialabundance \
      --input samplesheet.csv \
@@ -68,6 +71,7 @@ RNA-seq limma+voom:
      --outdir <OUTDIR>  \
      -profile rnaseq_limma,<docker/singularity/podman/shifter/charliecloud/conda/institute>
 ```
+
 :::note
 If you are using the outputs of the nf-core rnaseq workflow as input here **either**:
 
