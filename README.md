@@ -77,8 +77,6 @@ If you are using the outputs of the nf-core rnaseq workflow as input here you sh
 
 > "Because limma-voom does not use the offset matrix stored in `y$offset`, we recommend using scaled counts generated from abundances, either 'scaledTPM' or 'lengthScaledTPM'."
 
-These matrices, **gene_counts_length_scaled.tsv** or **gene_counts_scaled.tsv**, are generated in the RNA-seq workflow and meet this recommendation by providing appropriately scaled counts for analysis.
-
 See the [usage documentation](https://nf-co.re/differentialabundance/usage) for more information.
 :::
 
