@@ -9,8 +9,11 @@ workflow EXPERIMENTAL {
     take:
     ch_contrasts    // [ meta, contrast_variable, reference, target ]
     ch_samplesheet  // [ meta, samplesheet ]
+    ch_featuresheet // [ meta, featuresheet ]
+    ch_gene_sets
     ch_counts       // [ meta, counts]
     ch_tools        // [ pathway_name, differential_map, correlation_map, enrichment_map ]
+    ch_versions
 
     main:
 
@@ -70,7 +73,12 @@ workflow EXPERIMENTAL {
         ch_counts,
         ch_results_genewise,
         ch_results_genewise_filtered,
-        ch_adjacency
+        ch_adjacency,
+        ch_contrasts,
+        ch_samplesheet,
+        ch_featuresheet,
+        ch_gene_sets,
+        ch_versions
     )
     ch_enriched = ch_enriched.mix(ENRICHMENT.out.enriched)
 

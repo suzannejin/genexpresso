@@ -387,8 +387,11 @@ workflow DIFFERENTIALABUNDANCE {
         EXPERIMENTAL(
             ch_contrasts,
             VALIDATOR.out.sample_meta,
+            VALIDATOR.out.feature_meta,
+            ch_gene_sets,
             CUSTOM_MATRIXFILTER.out.filtered,
-            ch_tools
+            ch_tools,
+            ch_versions
         )
 
         // TODO for the moment, these channels are allocated to not breaking the next part.
