@@ -12,9 +12,9 @@
             },
             "diff_method": {
                 "type": "string",
-                "errorMessage": "choose a differential analysis method (eg. deseq2, propd) or none",
+                "errorMessage": "choose a differential analysis method (eg. deseq2, limma, propd) or none",
                 "meta": ["diff_method"],
-                "enum": ["propd", "deseq2", "none"]
+                "enum": ["propd", "deseq2", "limma", "none"]
             },
             "args_diff": {
                 "type": "string",
