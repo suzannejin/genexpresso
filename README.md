@@ -73,9 +73,7 @@ RNA-seq limma+voom:
 ```
 
 :::note
-If you are using the outputs of the nf-core rnaseq workflow as input here **either**:
-
-Provide either the **gene_counts_length_scaled.tsv** or **gene_counts_scaled.tsv** matrices. This follows the [recommendation from the tximport documentation](https://bioconductor.org/packages/devel/bioc/vignettes/tximport/inst/doc/tximport.html#limma-voom):
+If you are using the outputs of the nf-core rnaseq workflow as input here you should provide either the **gene_counts_length_scaled.tsv** or **gene_counts_scaled.tsv** matrices. This follows the [recommendation from the tximport documentation](https://bioconductor.org/packages/devel/bioc/vignettes/tximport/inst/doc/tximport.html#limma-voom):
 
 > "Because limma-voom does not use the offset matrix stored in `y$offset`, we recommend using scaled counts generated from abundances, either 'scaledTPM' or 'lengthScaledTPM'."
 
