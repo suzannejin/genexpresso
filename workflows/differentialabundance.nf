@@ -342,7 +342,11 @@ workflow DIFFERENTIALABUNDANCE {
         .join(CUSTOM_MATRIXFILTER.out.filtered)     // -> meta, samplesheet, filtered matrix
         .first()
 
-    if (params.study_type == 'affy_array' || params.study_type == 'geo_soft_file' || params.study_type == 'maxquant'){
+    if (params.study_type == 'affy_array' ||
+        params.study_type == 'geo_soft_file' ||
+        params.study_type == 'maxquant' ||
+        (params.study_type == 'rnaseq' && params.differential_use_limma)
+        ) {
 
         LIMMA_DIFFERENTIAL (
             ch_contrasts,
@@ -354,12 +358,15 @@ workflow DIFFERENTIALABUNDANCE {
         ch_versions = ch_versions
             .mix(LIMMA_DIFFERENTIAL.out.versions)
 
+        if (params.study_type == 'rnaseq') {
+            ch_norm = LIMMA_DIFFERENTIAL.out.normalised_counts.first()
+        }
+
         ch_processed_matrices = ch_norm
             .map{ it.tail() }
             .first()
-    }
-    else{
 
+    } else {
         DESEQ2_NORM (
             ch_contrasts.first(),
             ch_samples_and_matrix,
@@ -617,7 +624,11 @@ workflow DIFFERENTIALABUNDANCE {
 
     def params_pattern = "report|gene_sets|study|observations|features|filtering|exploratory|differential"
     if (params.study_type == 'rnaseq'){
-        params_pattern += "|deseq2"
+        if (params.differential_use_limma){
+            params_pattern += "|limma"
+        } else {
+            params_pattern += "|deseq2"
+        }
     }
     if (params.study_type == 'affy_array' || params.study_type == 'geo_soft_file'){
         params_pattern += "|affy|limma"
@@ -638,7 +649,6 @@ workflow DIFFERENTIALABUNDANCE {
             params.findAll{ k,v -> k.matches(params_pattern) } +
             [report_file_names, it.collect{ f -> f.name}].transpose().collectEntries()
         }
-
     // Render the final report
     RMARKDOWNNOTEBOOK(
         ch_report_file,

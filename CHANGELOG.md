@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- [[#286](https://github.com/nf-core/differentialabundance/pull/286)] - Integration of limma voom for rnaseq data ([@KamilMaliszArdigen](https://github.com/KamilMaliszArdigen), review by [@pinin4fjords](https://github.com/pinin4fjords))
+
 ### Fixed
 
 - [[#304](https://github.com/nf-core/differentialabundance/pull/304)] - Removed TXT file options from nextflow_schema where they are equivalent to TSV to make the input files clearer ([@WackerO](https://github.com/WackerO), review by [@pinin4fjords](https://github.com/pinin4fjords))
