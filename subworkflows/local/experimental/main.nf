@@ -1,9 +1,10 @@
 //
 // Run experimental analysis
 //
-include { DIFFERENTIAL }        from '../differential/main.nf'
-include { CORRELATION }         from '../correlation/main.nf'
-include { ENRICHMENT }          from '../enrichment/main.nf'
+include { DIFFERENTIAL } from '../differential/main.nf'
+include { CORRELATION } from '../correlation/main.nf'
+include { ENRICHMENT } from '../enrichment/main.nf'
+include { SHINYNGS_STATICEXPLORATORY as PLOT_EXPLORATORY } from '../../../modules/nf-core/shinyngs/staticexploratory/main.nf'
 
 workflow EXPERIMENTAL {
     take:
@@ -78,5 +79,19 @@ workflow EXPERIMENTAL {
     // VISUALIZATION BLOCK
     // ----------------------------------------------------
 
-    // TODO: call visualization stuff here
+    // compute exploratory plots for data
+
+    ch_contrasts
+        .map {
+            [ "id": it[1] ]
+        }
+        .unique()
+        .set { ch_contrast_variables }
+    ch_contrast_variables
+        .combine(ch_counts.map{ it.tail() })
+        .set{ ch_to_plot_exploratory }  // [meta, contrast_variable, count_file]
+
+    PLOT_EXPLORATORY(ch_to_plot_exploratory)
+
+    // TODO: add other visualization stuff here
 }
