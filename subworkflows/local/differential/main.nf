@@ -96,9 +96,10 @@ workflow DIFFERENTIAL {
     // ----------------------------------------------------
 
     ch_counts
-        .join(ch_samplesheet) //samplesheet + counts have the same meta
-        .combine(ch_contrasts) // meta is different 
-        .combine(ch_tools_single.limma) 
+        .join(ch_samplesheet)
+        .combine(ch_contrasts)
+        .combine(ch_tools_single.limma)
+        .unique()
         .multiMap {
             meta_data, counts, samplesheet, meta_contrast, contrast_variable, reference, target, pathway, meta_tools ->
                 def meta = meta_data.clone() + meta_contrast.clone() + meta_tools.clone()
@@ -110,8 +111,10 @@ workflow DIFFERENTIAL {
 
     LIMMA_DIFFERENTIAL(ch_limma.input1, ch_limma.input2)
   
-    ch_results_genewise          = LIMMA_DIFFERENTIAL.out.results
-                                        .join(ch_limma.pathway).map(correct_meta_data).mix(ch_results_genewise)
+    ch_results_genewise = LIMMA_DIFFERENTIAL.out.results
+                              .join(ch_limma.pathway).map(correct_meta_data).mix(ch_results_genewise)
+
+    // TODO add filtering step for limma
 
     emit:
     results_pairwise          = ch_results_pairwise
