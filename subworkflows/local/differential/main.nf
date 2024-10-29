@@ -6,8 +6,7 @@ include { DESEQ2_DIFFERENTIAL  } from '../../../modules/nf-core/deseq2/different
 
 workflow DIFFERENTIAL {
     take:
-    ch_tools        // [ differential_map ] with the keys: diff_method, args_diff
-    ch_counts
+    ch_counts       // [ meta, counts] with meta keys: method, args_diff
     ch_samplesheet
     ch_contrasts    // [meta, contrast_variable, reference, target]
 
@@ -21,25 +20,25 @@ workflow DIFFERENTIAL {
     ch_adjacency                 = Channel.empty()
 
     // branch tools to select the correct differential analysis method
-    ch_tools
+    ch_counts
         .branch {
-            propd:  it["diff_method"] == "propd"
-            deseq2: it["diff_method"] == "deseq2"
+            propd:  it[0]["method"] == "propd"
+            deseq2: it[0]["method"] == "deseq2"
         }
-        .set { ch_tools_single }
+        .set { ch_counts }
 
     // ----------------------------------------------------
     // Perform differential analysis with propd
     // ----------------------------------------------------
 
-    ch_counts
-        .join(ch_samplesheet)
+    ch_counts.propd
+        .combine(ch_samplesheet)
+        .filter{ meta_counts, counts, meta_samplesheet, samplesheet -> meta_counts.subMap(meta_samplesheet.keySet()) == meta_samplesheet }
         .combine(ch_contrasts)
-        .combine(ch_tools_single.propd)
         .map {
-            meta_data, counts, samplesheet, meta_contrast, contrast_variable, reference, target, meta_tools ->
-                def meta = meta_data.clone() + ['contrast': meta_contrast.id] + meta_tools.clone()
-                input:   [ meta, counts, samplesheet, contrast_variable, reference, target ]
+            meta_data, counts, meta_samplesheet, samplesheet, meta_contrast, contrast_variable, reference, target ->
+                def meta = meta_data.clone() + ['contrast': meta_contrast.id]
+                return [ meta, counts, samplesheet, contrast_variable, reference, target ]
         }
         .set { ch_propd }
 

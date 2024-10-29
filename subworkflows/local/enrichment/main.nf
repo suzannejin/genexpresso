@@ -6,7 +6,6 @@ include { PROPR_GREA as GREA } from "../../../modules/local/propr/grea/main.nf"
 
 workflow ENRICHMENT {
     take:
-    ch_tools        // [ pathway_name, enrichment_map ]
     ch_counts
     ch_results_genewise
     ch_results_genewise_filtered
@@ -17,6 +16,14 @@ workflow ENRICHMENT {
 
     // initialize empty results channels
     ch_enriched = Channel.empty()
+    ch_gmt      = Channel.empty()
+
+    ch_adjacency
+        .branch {
+            grea: it[0]["method"] == "grea"
+            gsea: it[0]["method"] == "gsea"
+        }
+        .set { ch_adjacency }
 
     // ----------------------------------------------------
     // Construct gene set database
@@ -24,28 +31,20 @@ workflow ENRICHMENT {
 
     // TODO this should be optional, only run when there is no gene set data provided by user
 
+    // empty counts channel of ch_adjacency is empty to skip unnecessary MYGENE computations
+    ch_counts
+        .combine(ch_adjacency.grea)
+        .map{ meta_counts, counts, meta_adjacency, adjacency -> [meta_counts, counts]}
+        .unique()
+        .set{ch_counts}
+
     MYGENE(ch_counts.take(1))  // only one data is provided to this pipeline
     ch_gmt = MYGENE.out.gmt
 
     // ----------------------------------------------------
     // Perform enrichment analysis with GREA
     // ----------------------------------------------------
-
-    ch_adjacency
-        .map { meta, matrix -> [meta.subMap(["pathway_name"]), meta, matrix] }
-        .join(ch_tools, by: [0])
-        .map {
-            pathway_name, meta, matrix, meta_tools ->
-                def new_meta = meta.clone() + meta_tools.clone()
-                [ new_meta, matrix ]
-            }
-        .branch {
-            grea:  it[0]["enr_method"] == "grea"
-            gsea: it[0]["enr_method"] == "gsea"
-        }
-        .set { ch_adjacency }
-
-    GREA(ch_adjacency.grea, ch_gmt.collect())
+    GREA(ch_adjacency.grea.unique(), ch_gmt.collect())
     ch_enriched = ch_enriched.mix(GREA.out.results)
 
     // ----------------------------------------------------
