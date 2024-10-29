@@ -116,6 +116,8 @@ workflow DIFFERENTIAL {
     LIMMA_DIFFERENTIAL(ch_limma.input1, ch_limma.input2)
 
     // filter results
+    // note that these are column names specific for limma output table
+    // TODO modify the module to accept these parameters as meta/ext.args in the same way how propd does
     ch_logfc = Channel.value([ "logFC", params.differential_min_fold_change ])
     ch_padj = Channel.value([ "adj.P.Val", params.differential_max_qval ])
     FILTER_DIFFTABLE_LIMMA(
