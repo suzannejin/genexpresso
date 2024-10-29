@@ -116,8 +116,8 @@ workflow DIFFERENTIAL {
     LIMMA_DIFFERENTIAL(ch_limma.input1, ch_limma.input2)
 
     // filter results
-    ch_logfc = Channel.value([ params.differential_fc_column, params.differential_min_fold_change ])
-    ch_padj = Channel.value([ params.differential_qval_column, params.differential_max_qval ])
+    ch_logfc = Channel.value([ "logFC", params.differential_min_fold_change ])
+    ch_padj = Channel.value([ "adj.P.Val", params.differential_max_qval ])
     FILTER_DIFFTABLE_LIMMA(
         LIMMA_DIFFERENTIAL.out.results,
         ch_logfc,
