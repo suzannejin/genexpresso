@@ -387,7 +387,8 @@ workflow DIFFERENTIALABUNDANCE {
         EXPERIMENTAL(
             ch_contrasts,
             VALIDATOR.out.sample_meta,
-            CUSTOM_MATRIXFILTER.out.filtered,
+            VALIDATOR.out.feature_meta,
+            VALIDATOR.out.assays,
             ch_tools
         )
 
@@ -551,14 +552,16 @@ workflow DIFFERENTIALABUNDANCE {
         ch_mat = ch_raw.combine(ch_processed_matrices)
     }
 
-    ch_all_matrices = VALIDATOR.out.sample_meta                // meta, samples
+    ch_all_matrices = VALIDATOR.out.sample_meta                 // meta, samples
         .join(VALIDATOR.out.feature_meta)                       // meta, samples, features
         .join(ch_mat)                                           // meta, samples, features, raw, norm (or just norm)
         .map{
             tuple(it[0], it[1], it[2], it[3..it.size()-1])
         }
         .first()
-
+    ch_contrast_variables
+            .combine(ch_all_matrices.map{ it.tail() })
+            .view()
     PLOT_EXPLORATORY(
         ch_contrast_variables
             .combine(ch_all_matrices.map{ it.tail() })
