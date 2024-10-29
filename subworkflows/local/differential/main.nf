@@ -3,6 +3,7 @@
 //
 include { PROPR_PROPD as PROPD } from "../../../modules/local/propr/propd/main.nf"
 include { DESEQ2_DIFFERENTIAL  } from '../../../modules/nf-core/deseq2/differential/main'
+include { LIMMA_DIFFERENTIAL } from '../../../modules/nf-core/limma/differential/main'
 
 def correct_meta_data = { meta, data, pathway ->
     def meta_clone = meta.clone() + pathway
@@ -14,9 +15,9 @@ def correct_meta_data = { meta, data, pathway ->
 workflow DIFFERENTIAL {
     take:
     ch_tools        // [ pathway_name, differential_map ]
-    ch_counts
-    ch_samplesheet
-    ch_contrasts    // [meta, contrast_variable, reference, target]
+    ch_counts       // [ meta_data, counts ]
+    ch_samplesheet  // [ meta_data, samplesheet ]
+    ch_contrasts    // [ meta_contrast, contrast_variable, reference, target ]
 
     main:
 
@@ -32,6 +33,7 @@ workflow DIFFERENTIAL {
         .branch {
             propd:  it[1]["diff_method"] == "propd"
             deseq2: it[1]["diff_method"] == "deseq2"
+            limma: it[1]["diff_method"] == "limma"
         }
         .set { ch_tools_single }
 
@@ -88,6 +90,31 @@ workflow DIFFERENTIAL {
     // )
     // ch_results = ch_results
     //     .mix(DESEQ2_DIFFERENTIAL.out.results)
+
+    // ----------------------------------------------------
+    // Perform differential analysis with limma
+    // ----------------------------------------------------
+
+    ch_counts
+        .join(ch_samplesheet)
+        .combine(ch_contrasts)
+        .combine(ch_tools_single.limma)
+        .unique()
+        .multiMap {
+            meta_data, counts, samplesheet, meta_contrast, contrast_variable, reference, target, pathway, meta_tools ->
+                def meta = meta_data.clone() + meta_contrast.clone() + meta_tools.clone()
+                input1:  [ meta, contrast_variable, reference, target ]
+                input2:  [ meta, samplesheet, counts ]
+                pathway: [ meta, pathway ]
+        }
+        .set { ch_limma }
+
+    LIMMA_DIFFERENTIAL(ch_limma.input1, ch_limma.input2)
+
+    ch_results_genewise = LIMMA_DIFFERENTIAL.out.results
+                            .join(ch_limma.pathway).map(correct_meta_data).mix(ch_results_genewise)
+
+    // TODO add filtering step for limma
 
     emit:
     results_pairwise          = ch_results_pairwise
