@@ -2,8 +2,9 @@
 // Perform differential analysis
 //
 include { PROPR_PROPD as PROPD } from "../../../modules/local/propr/propd/main.nf"
-include { DESEQ2_DIFFERENTIAL  } from '../../../modules/nf-core/deseq2/differential/main'
+include { DESEQ2_DIFFERENTIAL } from '../../../modules/nf-core/deseq2/differential/main'
 include { LIMMA_DIFFERENTIAL } from '../../../modules/nf-core/limma/differential/main'
+include { FILTER_DIFFTABLE as FILTER_DIFFTABLE_LIMMA } from '../../../modules/local/filter_difftable'
 
 def correct_meta_data = { meta, data, pathway ->
     def meta_clone = meta.clone() + pathway
@@ -14,10 +15,10 @@ def correct_meta_data = { meta, data, pathway ->
 
 workflow DIFFERENTIAL {
     take:
-    ch_tools        // [ pathway_name, differential_map ]
-    ch_counts       // [ meta_data, counts ]
-    ch_samplesheet  // [ meta_data, samplesheet ]
-    ch_contrasts    // [ meta_contrast, contrast_variable, reference, target ]
+    ch_tools              // [ pathway_name, differential_map ]
+    ch_counts             // [ meta_exp, counts ]
+    ch_samplesheet        // [ meta_exp, samplesheet ]
+    ch_contrasts          // [ meta_contrast, contrast_variable, reference, target ]
 
     main:
 
@@ -33,7 +34,7 @@ workflow DIFFERENTIAL {
         .branch {
             propd:  it[1]["diff_method"] == "propd"
             deseq2: it[1]["diff_method"] == "deseq2"
-            limma: it[1]["diff_method"] == "limma"
+            limma:  it[1]["diff_method"] == "limma"
         }
         .set { ch_tools_single }
 
@@ -95,6 +96,8 @@ workflow DIFFERENTIAL {
     // Perform differential analysis with limma
     // ----------------------------------------------------
 
+    // combine the input channels with the tools information
+    // in this way, limma will only be run if the user have specified it, as informed by ch_tools
     ch_counts
         .join(ch_samplesheet)
         .combine(ch_contrasts)
@@ -109,12 +112,25 @@ workflow DIFFERENTIAL {
         }
         .set { ch_limma }
 
+    // run limma
     LIMMA_DIFFERENTIAL(ch_limma.input1, ch_limma.input2)
 
+    // filter results
+    // note that these are column names specific for limma output table
+    // TODO modify the module to accept these parameters as meta/ext.args in the same way how propd does
+    ch_logfc = Channel.value([ "logFC", params.differential_min_fold_change ])
+    ch_padj = Channel.value([ "adj.P.Val", params.differential_max_qval ])
+    FILTER_DIFFTABLE_LIMMA(
+        LIMMA_DIFFERENTIAL.out.results,
+        ch_logfc,
+        ch_padj
+    )
+
+    // collect results
     ch_results_genewise = LIMMA_DIFFERENTIAL.out.results
                             .join(ch_limma.pathway).map(correct_meta_data).mix(ch_results_genewise)
-
-    // TODO add filtering step for limma
+    ch_results_genewise_filtered = FILTER_DIFFTABLE_LIMMA.out.filtered
+                            .join(ch_limma.pathway).map(correct_meta_data).mix(ch_results_genewise_filtered)
 
     emit:
     results_pairwise          = ch_results_pairwise
