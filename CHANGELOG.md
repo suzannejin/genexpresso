@@ -5,10 +5,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## v1.6.0dev - xxxx-xx-xx
 
-### Added
-
-- [[#329](https://github.com/nf-core/differentialabundance/pull/329)] - GSEA code into subworkflows/enrichment ([@thomas-tams](https://github.com/thomas-tams), review by X)
-
 ### Fixed
 
 - [[#299](https://github.com/nf-core/differentialabundance/pull/299)] - Add exclusions for 3.0.1 template update ([@pinin4fjords](https://github.com/pinin4fjords))
