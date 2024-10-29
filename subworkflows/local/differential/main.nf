@@ -110,9 +110,9 @@ workflow DIFFERENTIAL {
         .set { ch_limma }
 
     LIMMA_DIFFERENTIAL(ch_limma.input1, ch_limma.input2)
-  
+
     ch_results_genewise = LIMMA_DIFFERENTIAL.out.results
-                              .join(ch_limma.pathway).map(correct_meta_data).mix(ch_results_genewise)
+                            .join(ch_limma.pathway).map(correct_meta_data).mix(ch_results_genewise)
 
     // TODO add filtering step for limma
 
