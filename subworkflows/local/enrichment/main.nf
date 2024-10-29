@@ -86,6 +86,7 @@ workflow ENRICHMENT {
     // The normalised matrix does not always have a contrast meta, so we
     // need a combine rather than a join here
     // Also add file name to metamap for easy access from modules.config
+    // TODO combine the input channel with the ch_tools 
 
     ch_gsea_inputs = CUSTOM_TABULARTOGSEAGCT.out.gct
         .map{ it.tail() }
