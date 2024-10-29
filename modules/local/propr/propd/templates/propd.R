@@ -465,21 +465,50 @@ if (opt\$permutation == 0) {
 
     warning('Permutation tests are used to compute FDR values.')
 
-    # update FDR values using permutation tests
+    # calculate FDR values using permutation tests
+    # this part will call the updateCutoffs function iteratively
+    # as far as it does not find a meaningful theta value
+    # and does not reach the maximum number of iterations
 
-    pd <- updateCutoffs(
-        pd,
-        number_of_cutoffs = 100,
-        ncores = opt\$ncores
-    )
+    theta_cutoff <- FALSE
+    max_cutoff <- 1
+    ntry <- 0
+    while (!theta_cutoff & max_cutoff > 0 & ntry < 10) {
+        ntry <- ntry + 1
 
-    # get theta cutoff
+        # get theta cutoffs to test the FDR
 
-    theta_cutoff <- getCutoffFDR(
-        pd,
-        fdr=opt\$fdr,
-        window_size=1
-    )
+        if (ntry > 1) {
+            part <- pd@fdr[which(pd@fdr\$truecounts > 0),]
+            if (nrow(part) > 1) {
+                max_cutoff <- min(part\$cutoff)
+            } else {
+                break
+            }
+        }
+
+        cutoffs <- as.numeric(quantile(
+            pd@results[pd@results\$theta < max_cutoff, 'theta'],
+            seq(0, 1, length.out = opt\$number_of_cutoffs)
+        ))
+
+        # update FDR values
+
+        pd <- updateCutoffs(
+            pd,
+            custom_cutoffs = cutoffs,
+            ncores = opt\$ncores
+        )
+
+        # check if any theta value has FDR below desired threshold
+
+        theta_cutoff <- getCutoffFDR(
+            pd,
+            fdr=opt\$fdr,
+            window_size=1
+        )
+    }
+
     if (theta_cutoff) {
 
         warning('Significant theta value found: ', theta_cutoff)
