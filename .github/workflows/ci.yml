@@ -36,6 +36,7 @@ jobs:
           - "test_maxquant"
           - "test_soft"
           - "test_experimental"
+          - "test_rnaseq_limma"
         compute_profile:
           - "conda"
           - "docker"

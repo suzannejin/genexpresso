@@ -42,7 +42,7 @@ On release, automated continuous integration tests run the pipeline on a full-si
 > [!NOTE]
 > If you are new to Nextflow and nf-core, please refer to [this page](https://nf-co.re/docs/usage/installation) on how to set-up Nextflow. Make sure to [test your setup](https://nf-co.re/docs/usage/introduction#how-to-run-a-pipeline) with `-profile test` before running the workflow on actual data.
 
-RNA-seq:
+RNA-seq with deseq2:
 
 ```bash
  nextflow run nf-core/differentialabundance \
@@ -59,6 +59,23 @@ If you are using the outputs of the nf-core rnaseq workflow as input here **eith
 
 - supply the raw count matrices (file names like **gene_counts.tsv**) alongide the transcript length matrix via `--transcript_length_matrix` (rnaseq versions >=3.12.0, preferred)
 - **or** supply the **gene_counts_length_scaled.tsv** or **gene_counts_scaled.tsv** matrices.
+
+RNA-seq limma+voom:
+
+```bash
+ nextflow run nf-core/differentialabundance \
+     --input samplesheet.csv \
+     --contrasts contrasts.csv \
+     --matrix assay_matrix.tsv \
+     --gtf mouse.gtf \
+     --outdir <OUTDIR>  \
+     -profile rnaseq_limma,<docker/singularity/podman/shifter/charliecloud/conda/institute>
+```
+
+:::note
+If you are using the outputs of the nf-core rnaseq workflow as input here you should provide either the **gene_counts_length_scaled.tsv** or **gene_counts_scaled.tsv** matrices. This follows the [recommendation from the tximport documentation](https://bioconductor.org/packages/devel/bioc/vignettes/tximport/inst/doc/tximport.html#limma-voom):
+
+> "Because limma-voom does not use the offset matrix stored in `y$offset`, we recommend using scaled counts generated from abundances, either 'scaledTPM' or 'lengthScaledTPM'."
 
 See the [usage documentation](https://nf-co.re/differentialabundance/usage) for more information.
 :::
