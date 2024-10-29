@@ -15,9 +15,9 @@ def correct_meta_data = { meta, data, pathway ->
 workflow DIFFERENTIAL {
     take:
     ch_tools        // [ pathway_name, differential_map ]
-    ch_counts
-    ch_samplesheet
-    ch_contrasts    // [meta, contrast_variable, reference, target]
+    ch_counts       // [ meta_data, counts ]
+    ch_samplesheet  // [ meta_data, samplesheet ]
+    ch_contrasts    // [ meta_contrast, contrast_variable, reference, target ]
 
     main:
 
@@ -108,7 +108,7 @@ workflow DIFFERENTIAL {
         }
         .set { ch_limma }
 
-    LIMMA_DIFFERENTIAL(ch_limma.input1.unique(), ch_limma.input2.unique())
+    LIMMA_DIFFERENTIAL(ch_limma.input1, ch_limma.input2)
   
     ch_results_genewise          = LIMMA_DIFFERENTIAL.out.results
                                         .join(ch_limma.pathway).map(correct_meta_data).mix(ch_results_genewise)
