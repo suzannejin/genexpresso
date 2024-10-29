@@ -74,6 +74,20 @@ workflow ENRICHMENT {
 
     // rearrage channel for GPROFILER2_GOST process
     ch_gmt = ch_gmt.map { meta, gmt -> gmt }
+
+    ch_results_genewise_filtered
+        .map { meta, matrix -> [meta.subMap(["pathway_name"]), meta, matrix] }
+        .join(ch_tools, by: [0])
+        .map {
+            pathway_name, meta, matrix, meta_tools ->
+                def new_meta = meta.clone() + meta_tools.clone()
+                [ new_meta, matrix ]
+        }
+        .filter { 
+            it[0].enr_method == "gprofiler2" 
+        }
+        .set { ch_results_genewise_filtered }
+    
     GPROFILER2_GOST(ch_results_genewise_filtered, ch_gmt, ch_background)
 
     emit:
