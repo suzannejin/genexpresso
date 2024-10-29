@@ -84,17 +84,16 @@ workflow DIFFERENTIAL {
 
     // combine the input channels with the tools information
     // in this way, limma will only be run if the user have specified it, as informed by ch_tools
-    ch_counts
-        .join(ch_samplesheet)
+    ch_counts.limma
+        .combine(ch_samplesheet)
+        .filter{ meta_counts, counts, meta_samplesheet, samplesheet -> meta_counts.subMap(meta_samplesheet.keySet()) == meta_samplesheet }
         .combine(ch_contrasts)
-        .combine(ch_tools_single.limma)
         .unique()
         .multiMap {
-            meta_data, counts, samplesheet, meta_contrast, contrast_variable, reference, target, pathway, meta_tools ->
-                def meta = meta_data.clone() + meta_contrast.clone() + meta_tools.clone()
+            meta_data, counts, meta_samplesheet, samplesheet, meta_contrast, contrast_variable, reference, target ->
+                def meta = meta_data.clone() + meta_contrast.clone()
                 input1:  [ meta, contrast_variable, reference, target ]
                 input2:  [ meta, samplesheet, counts ]
-                pathway: [ meta, pathway ]
         }
         .set { ch_limma }
 
@@ -113,10 +112,8 @@ workflow DIFFERENTIAL {
     )
 
     // collect results
-    ch_results_genewise = LIMMA_DIFFERENTIAL.out.results
-                            .join(ch_limma.pathway).map(correct_meta_data).mix(ch_results_genewise)
-    ch_results_genewise_filtered = FILTER_DIFFTABLE_LIMMA.out.filtered
-                            .join(ch_limma.pathway).map(correct_meta_data).mix(ch_results_genewise_filtered)
+    ch_results_genewise = LIMMA_DIFFERENTIAL.out.results.mix(ch_results_genewise)
+    ch_results_genewise_filtered = FILTER_DIFFTABLE_LIMMA.out.filtered.mix(ch_results_genewise_filtered)
 
     emit:
     results_pairwise          = ch_results_pairwise
