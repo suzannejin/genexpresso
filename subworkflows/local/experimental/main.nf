@@ -63,7 +63,6 @@ workflow EXPERIMENTAL {
 
     preprocess_subworkflow_output(ch_counts, ch_tools.diff, "diff_method")
         .set{ ch_counts_diff }
-    ch_counts_diff.view{"diff: "+it}
     DIFFERENTIAL(
         ch_counts_diff,
         ch_samplesheet,
@@ -81,7 +80,6 @@ workflow EXPERIMENTAL {
 
     preprocess_subworkflow_output(ch_counts, ch_tools.corr, "cor_method")
         .set{ ch_counts_corr }
-    ch_counts_corr.view{"corr: "+it}
 
     CORRELATION(
         ch_counts_corr
