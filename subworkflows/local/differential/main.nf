@@ -105,7 +105,7 @@ workflow DIFFERENTIAL {
 
     DESEQ2_DIFFERENTIAL (
             ch_deseq2.contrast,
-            ch_deseq2.samplesheet,
+            ch_deseq2.samples_and_matrix,
             ch_deseq2.control_features,
             ch_deseq2.transcript_lengths
         )
