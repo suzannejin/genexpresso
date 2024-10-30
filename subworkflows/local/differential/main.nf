@@ -94,7 +94,7 @@ workflow DIFFERENTIAL {
                 pathway: [ meta, pathway ]
         }
         .set { ch_deseq2 }
-    
+
     // do we need this process DESEQ2_NORM?
     DESEQ2_NORM (
             ch_deseq2.contrast.first(),
@@ -102,7 +102,7 @@ workflow DIFFERENTIAL {
             ch_deseq2.control_features,
             ch_deseq2.transcript_lengths
         )
-    
+
     DESEQ2_DIFFERENTIAL (
             ch_deseq2.contrast,
             ch_deseq2.samplesheet,
@@ -133,7 +133,7 @@ workflow DIFFERENTIAL {
         ch_logfc_deseq2,
         ch_padj_deseq2
     )
-    
+
     ch_results_genewise = DESEQ2_DIFFERENTIAL.out.results
                             .join(ch_deseq2.pathway).map(correct_meta_data).mix(ch_results_genewise)
 
