@@ -98,7 +98,7 @@ workflow DIFFERENTIAL {
     // do we need this process DESEQ2_NORM?
     DESEQ2_NORM (
             ch_deseq2.contrast.first(),
-            ch_deseq2.samplesheet,
+            ch_deseq2.samples_and_matrix,
             ch_deseq2.control_features,
             ch_deseq2.transcript_lengths
         )
