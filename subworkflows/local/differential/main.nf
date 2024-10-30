@@ -3,8 +3,10 @@
 //
 include { PROPR_PROPD as PROPD } from "../../../modules/local/propr/propd/main.nf"
 include { DESEQ2_DIFFERENTIAL } from '../../../modules/nf-core/deseq2/differential/main'
+include { DESEQ2_DIFFERENTIAL as DESEQ2_NORM } from "../../../modules/nf-core/deseq2/differential/main"
 include { LIMMA_DIFFERENTIAL } from '../../../modules/nf-core/limma/differential/main'
 include { FILTER_DIFFTABLE as FILTER_DIFFTABLE_LIMMA } from '../../../modules/local/filter_difftable'
+include { FILTER_DIFFTABLE as FILTER_DIFFTABLE_DESEQ2 } from '../../../modules/local/filter_difftable'
 
 def correct_meta_data = { meta, data, pathway ->
     def meta_clone = meta.clone() + pathway
@@ -73,24 +75,70 @@ workflow DIFFERENTIAL {
     // Perform differential analysis with DESeq2
     // ----------------------------------------------------
 
-    // ToDo: In order to use deseq2 the downstream processes need to be updated to process the output correctly
-    // if (params.transcript_length_matrix) { ch_transcript_lengths = Channel.of([ exp_meta, file(params.transcript_length_matrix, checkIfExists: true)]).first() } else { ch_transcript_lengths = [[],[]] }
-    // if (params.control_features) { ch_control_features = Channel.of([ exp_meta, file(params.control_features, checkIfExists: true)]).first() } else { ch_control_features = [[],[]] }
+    if (params.transcript_length_matrix) { ch_transcript_lengths = Channel.of([ exp_meta, file(params.transcript_length_matrix, checkIfExists: true)]).first() } else { ch_transcript_lengths = Channel.of([[],[]]) }
+    if (params.control_features) { ch_control_features = Channel.of([ exp_meta, file(params.control_features, checkIfExists: true)]).first() } else { ch_control_features = Channel.of([[],[]]) }
 
-    // ch_samplesheet
-    //     .join(ch_counts)
-    //     .first()
-    //     .combine(ch_tools_single.deseq2)
-    //     .set { ch_counts_deseq2 }
+    ch_counts
+        .join(ch_samplesheet)
+        .combine(ch_contrasts)
+        .combine(ch_transcript_lengths)
+        .combine(ch_control_features)
+        .combine(ch_tools_single.deseq2)
+        .multiMap {
+            meta_data, counts, samplesheet, meta_contrast, contrast_variable, reference, target, meta_lengths, lengths, meta_control, control, pathway, meta_tools ->
+                def meta = meta_data.clone() + meta_contrast.clone() + meta_lengths.clone() + meta_control.clone() + meta_tools.clone()
+                contrast: [ meta, contrast_variable, reference, target ]
+                samplesheet: [ meta, samplesheet, counts ]
+                control_features:   [ meta, control ]
+                transcript_lengths: [ meta, lengths ]
+                pathway: [ meta, pathway ]
+        }
+        .set { ch_deseq2 }
+    
+    // do we need this process DESEQ2_NORM?
+    DESEQ2_NORM (
+            ch_deseq2.contrast.first(),
+            ch_deseq2.samplesheet,
+            ch_deseq2.control_features,
+            ch_deseq2.transcript_lengths
+        )
+    
+    DESEQ2_DIFFERENTIAL (
+            ch_deseq2.contrast,
+            ch_deseq2.samplesheet,
+            ch_deseq2.control_features,
+            ch_deseq2.transcript_lengths
+        )
 
-    // DESEQ2_DIFFERENTIAL (
-    //     ch_contrasts,
-    //     ch_counts_deseq2,
-    //     ch_control_features,
-    //     ch_transcript_lengths
-    // )
-    // ch_results = ch_results
-    //     .mix(DESEQ2_DIFFERENTIAL.out.results)
+    ch_norm_deseq2 = DESEQ2_NORM.out.normalised_counts
+    ch_differential_deseq2 = DESEQ2_DIFFERENTIAL.out.results
+    ch_model_deseq2 = DESEQ2_DIFFERENTIAL.out.model
+
+    ch_processed_matrices = ch_norm_deseq2
+    if ('rlog' in params.deseq2_vs_method){
+        ch_processed_matrices = ch_processed_matrices.join(DESEQ2_NORM.out.rlog_counts)
+    }
+    if ('vst' in params.deseq2_vs_method){
+        ch_processed_matrices = ch_processed_matrices.join(DESEQ2_NORM.out.vst_counts)
+    }
+    ch_processed_matrices = ch_processed_matrices
+        .map{ it.tail() }
+
+    // TODO modify the module to accept these parameters as meta/ext.args in the same way how propd does
+    ch_logfc_deseq2 = Channel.value([ "log2FoldChange", params.differential_min_fold_change ])
+    ch_padj_deseq2 = Channel.value([ "padj", params.differential_max_qval ])
+
+    FILTER_DIFFTABLE_DESEQ2(
+        ch_differential_deseq2,
+        ch_logfc_deseq2,
+        ch_padj_deseq2
+    )
+    
+    ch_results_genewise = DESEQ2_DIFFERENTIAL.out.results
+                            .join(ch_deseq2.pathway).map(correct_meta_data).mix(ch_results_genewise)
+
+    ch_results_genewise_filtered = FILTER_DIFFTABLE_DESEQ2.out.filtered
+                            .join(ch_deseq2.pathway).map(correct_meta_data).mix(ch_results_genewise_filtered)
 
     // ----------------------------------------------------
     // Perform differential analysis with limma
@@ -112,18 +160,19 @@ workflow DIFFERENTIAL {
         }
         .set { ch_limma }
 
+
     // run limma
     LIMMA_DIFFERENTIAL(ch_limma.input1, ch_limma.input2)
 
     // filter results
     // note that these are column names specific for limma output table
     // TODO modify the module to accept these parameters as meta/ext.args in the same way how propd does
-    ch_logfc = Channel.value([ "logFC", params.differential_min_fold_change ])
-    ch_padj = Channel.value([ "adj.P.Val", params.differential_max_qval ])
+    ch_logfc_limma = Channel.value([ "logFC", params.differential_min_fold_change ])
+    ch_padj_limma = Channel.value([ "adj.P.Val", params.differential_max_qval ])
     FILTER_DIFFTABLE_LIMMA(
         LIMMA_DIFFERENTIAL.out.results,
-        ch_logfc,
-        ch_padj
+        ch_logfc_limma,
+        ch_padj_limma
     )
 
     // collect results
