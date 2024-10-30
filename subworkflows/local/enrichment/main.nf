@@ -3,6 +3,7 @@
 //
 include { MYGENE } from "../../../modules/nf-core/mygene/main.nf"
 include { PROPR_GREA as GREA } from "../../../modules/local/propr/grea/main.nf"
+include { GPROFILER2_GOST } from "../../../modules/nf-core/gprofiler2/gost/main.nf"
 
 workflow ENRICHMENT {
     take:
@@ -45,7 +46,7 @@ workflow ENRICHMENT {
         }
         .set { ch_adjacency }
 
-    GREA(ch_adjacency.grea, ch_gmt.collect())
+    GREA(ch_adjacency.grea, ch_gmt.collect()) //currently, ch_gmt.collect() returns an empty channel, so this does not run
     ch_enriched = ch_enriched.mix(GREA.out.results)
 
     // ----------------------------------------------------
@@ -59,6 +60,35 @@ workflow ENRICHMENT {
     // ----------------------------------------------------
 
     // todo: add gprofiler2 here
+
+    // Define background file
+    if (!params.gprofiler2_background_file) {
+        // If deactivated, use empty list as "background"
+        ch_background = []
+    } else if (params.gprofiler2_background_file == "auto") {
+        // If auto, use input matrix as background
+        ch_background = ch_counts.map { meta, counts -> counts }
+    } else {
+        ch_background = Channel.from(file(params.gprofiler2_background_file, checkIfExists: true))
+    }
+
+    // rearrage channel for GPROFILER2_GOST process
+    ch_gmt = ch_gmt.map { meta, gmt -> gmt }
+
+    ch_results_genewise_filtered
+        .map { meta, matrix -> [meta.subMap(["pathway_name"]), meta, matrix] }
+        .join(ch_tools, by: [0])
+        .map {
+            pathway_name, meta, matrix, meta_tools ->
+                def new_meta = meta.clone() + meta_tools.clone()
+                [ new_meta, matrix ]
+        }
+        .filter {
+            it[0].enr_method == "gprofiler2"
+        }
+        .set { ch_results_genewise_filtered }
+
+    GPROFILER2_GOST(ch_results_genewise_filtered, ch_gmt, ch_background)
 
     emit:
     enriched = ch_enriched

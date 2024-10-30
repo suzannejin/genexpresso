@@ -24,7 +24,6 @@ workflow EXPERIMENTAL {
         }
         .set{ ch_tools }
 
-
     // initialize empty results channels
     ch_results_pairwise = Channel.empty()               // differential results for pairwise analysis - it should be a table
     ch_results_pairwise_filtered = Channel.empty()      // differential results for pairwise analysis - filtered - it should be a table
