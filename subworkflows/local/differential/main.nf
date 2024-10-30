@@ -88,7 +88,7 @@ workflow DIFFERENTIAL {
             meta_data, counts, samplesheet, meta_contrast, contrast_variable, reference, target, meta_lengths, lengths, meta_control, control, pathway, meta_tools ->
                 def meta = meta_data.clone() + meta_contrast.clone() + meta_lengths.clone() + meta_control.clone() + meta_tools.clone()
                 contrast: [ meta, contrast_variable, reference, target ]
-                samplesheet: [ meta, samplesheet, counts ]
+                samples_and_matrix: [ meta, samplesheet, counts ]
                 control_features:   [ meta, control ]
                 transcript_lengths: [ meta, lengths ]
                 pathway: [ meta, pathway ]
