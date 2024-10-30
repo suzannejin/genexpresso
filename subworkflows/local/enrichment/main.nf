@@ -22,7 +22,6 @@ workflow ENRICHMENT {
     ch_adjacency
         .branch {
             grea: it[0]["method"] == "grea"
-            gsea: it[0]["method"] == "gsea"
         }
         .set { ch_adjacency }
 
@@ -31,13 +30,6 @@ workflow ENRICHMENT {
     // ----------------------------------------------------
 
     // TODO this should be optional, only run when there is no gene set data provided by user
-
-    // empty counts channel of ch_adjacency is empty to skip unnecessary MYGENE computations
-    ch_counts
-        .combine(ch_adjacency.grea)
-        .map{ meta_counts, counts, meta_adjacency, adjacency -> [meta_counts, counts]}
-        .unique()
-        .set{ch_counts}
 
     MYGENE(ch_counts.take(1))  // only one data is provided to this pipeline
     ch_gmt = MYGENE.out.gmt
@@ -72,7 +64,7 @@ workflow ENRICHMENT {
         ch_background = Channel.from(file(params.gprofiler2_background_file, checkIfExists: true))
     }
 
-    // rearrage channel for GPROFILER2_GOST process
+    // rearrange channel for GPROFILER2_GOST process
     ch_gmt = ch_gmt.map { meta, gmt -> gmt }
 
     ch_results_genewise_filtered
