@@ -17,13 +17,6 @@ workflow ENRICHMENT {
 
     // initialize empty results channels
     ch_enriched = Channel.empty()
-    ch_gmt      = Channel.empty()
-
-    ch_adjacency
-        .branch {
-            grea: it[0]["method"] == "grea"
-        }
-        .set { ch_adjacency }
 
     // ----------------------------------------------------
     // Construct gene set database
@@ -38,7 +31,12 @@ workflow ENRICHMENT {
     // Perform enrichment analysis with GREA
     // ----------------------------------------------------
 
-    GREA(ch_adjacency.grea.unique(), ch_gmt.collect())
+    ch_adjacency
+        .filter { it[0]["method"] == "grea" }
+        .unique()
+        .set { ch_adjacency_to_grea }
+
+    GREA(ch_adjacency_to_grea, ch_gmt.collect())
     ch_enriched = ch_enriched.mix(GREA.out.results)
 
     // ----------------------------------------------------
@@ -51,30 +49,37 @@ workflow ENRICHMENT {
     // Perform enrichment analysis with gprofiler2
     // ----------------------------------------------------
 
-    // todo: add gprofiler2 here
+    // parse input channels
+    // TODO we need to find a way to combine these information with also args coming from toolsheet and modules.config
 
-    // Define background file
-    if (!params.gprofiler2_background_file) {
-        // If deactivated, use empty list as "background"
+    if (!params.gprofiler2_background_file) {  // If deactivated, use empty list as "background"
         ch_background = []
-    } else if (params.gprofiler2_background_file == "auto") {
-        // If auto, use input matrix as background
+    } else if (params.gprofiler2_background_file == "auto") {  // If auto, use input matrix as background
         ch_background = ch_counts.map { meta, counts -> counts }
     } else {
         ch_background = Channel.from(file(params.gprofiler2_background_file, checkIfExists: true))
     }
 
-    // rearrange channel for GPROFILER2_GOST process
     ch_gmt = ch_gmt.map { meta, gmt -> gmt }
 
     ch_results_genewise_filtered
-        .branch {
-            grea: it[0]["method"] == "gprofiler2"
-        }
-        .set { ch_results_genewise_filtered }
+        .filter { it[0]["method"] == "gprofiler2" }
+        .unique()
+        .set { ch_for_gprofiler2 }
 
-    GPROFILER2_GOST(ch_results_genewise_filtered, ch_gmt, ch_background)
+    // run gprofiler2
 
+    GPROFILER2_GOST(
+        ch_for_gprofiler2,
+        ch_gmt,
+        ch_background
+    )
+
+    // collect results
+
+    ch_enriched = ch_enriched.mix(GPROFILER2_GOST.out.all_enrich)
+
+    // TODO also collect the files for report purposes
     emit:
     enriched = ch_enriched
 }
