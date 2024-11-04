@@ -726,7 +726,7 @@ iv_min_group_sizes <- unlist(lapply(informative_variables, function(x) min(table
 
 if (any(iv_min_group_sizes > 2)){
     cat("\n### Outlier detection {.tabset}\n")
-    cat("\nOutlier detection based on [median absolute deviation](https://wiki.arrayserver.com/wiki/index.php?title=CorrelationQC.pdf) was undertaken, the outlier scoring is plotted below. For more on MAD, see [this wiki article](https://en.wikipedia.org/wiki/Median_absolute_deviation).\n")
+    cat("\nOutlier detection based on [median absolute deviation](https://archive.ph/o3thZ) was undertaken, the outlier scoring is plotted below. For more on MAD, see [this wiki article](https://en.wikipedia.org/wiki/Median_absolute_deviation).\n")
 }
 
 foo <- lapply(informative_variables[iv_min_group_sizes > 2], function(iv){
