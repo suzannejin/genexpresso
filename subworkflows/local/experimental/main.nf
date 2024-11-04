@@ -18,12 +18,14 @@ include { ENRICHMENT }          from '../enrichment/main.nf'
 // Basically, given ch_input and ch_tools_args,
 // it updates the meta data of ch_input with the required method value and args
 
+
 def preprocess_subworkflow_input( ch_input, ch_tools_args, method_field_name) {
     return ch_input
         .combine(ch_tools_args)
         // filter the tools_args to match the pathway_name
         // if no pathway_name is provided, then it will match all
         // NOTE that no pathway_name is provided when ch_tools only have one element. By doing this, it avoids the recomputation of processes that use the same tool/args but belong to different pathways
+        // TODO check if this works well when n == 1
         .filter{  meta, input, pathway, arg_maps -> meta["pathway_name"] ? meta["pathway_name"] == pathway["pathway_name"] : true }
         // update meta with method value and args
         .map{ meta, input, pathway, arg_map ->
@@ -133,7 +135,7 @@ workflow EXPERIMENTAL {
 
     // collect and postprocess the output of the subworkflow, by removing 'method' and 'args_cor'
 
-    ch_correlation = postprocess_subworkflow_output(CORRELATION.out.matrix,["method", "args_cor"]).mix(ch_correlation)
+    ch_correlation = postprocess_subworkflow_output(CORRELATION.out.correlation,["method", "args_cor"]).mix(ch_correlation)
     ch_adjacency   = postprocess_subworkflow_output(CORRELATION.out.adjacency,["method", "args_cor"]).mix(ch_adjacency)
 
     // ----------------------------------------------------

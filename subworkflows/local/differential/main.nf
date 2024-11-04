@@ -1,7 +1,7 @@
 //
 // Perform differential analysis
 //
-include { PROPR_PROPD as PROPD } from "../../../modules/local/propr/propd/main.nf"
+include { PROPR_PROPD } from "../../../modules/local/propr/propd/main.nf"
 include { DESEQ2_DIFFERENTIAL as DESEQ2_NORM } from "../../../modules/nf-core/deseq2/differential/main"
 include { DESEQ2_DIFFERENTIAL } from '../../../modules/nf-core/deseq2/differential/main'
 include { LIMMA_DIFFERENTIAL } from '../../../modules/nf-core/limma/differential/main'
@@ -56,13 +56,13 @@ workflow DIFFERENTIAL {
         .unique()
         .set { ch_propd }
 
-    PROPD(ch_propd)
+    PROPR_PROPD(ch_propd)
 
-    ch_results_genewise          = PROPD.out.connectivity.mix(ch_results_genewise)
-    ch_results_genewise_filtered = PROPD.out.hub_genes.mix(ch_results_genewise_filtered)
-    ch_results_pairwise          = PROPD.out.results.mix(ch_results_pairwise)
-    ch_results_pairwise_filtered = PROPD.out.results_filtered.mix(ch_results_pairwise_filtered)
-    ch_adjacency                 = PROPD.out.adjacency.mix(ch_adjacency)
+    ch_results_genewise          = PROPR_PROPD.out.connectivity.mix(ch_results_genewise)
+    ch_results_genewise_filtered = PROPR_PROPD.out.hub_genes.mix(ch_results_genewise_filtered)
+    ch_results_pairwise          = PROPR_PROPD.out.results.mix(ch_results_pairwise)
+    ch_results_pairwise_filtered = PROPR_PROPD.out.results_filtered.mix(ch_results_pairwise_filtered)
+    ch_adjacency                 = PROPR_PROPD.out.adjacency.mix(ch_adjacency)
 
     // ----------------------------------------------------
     // Perform differential analysis with DESEQ2
