@@ -31,6 +31,7 @@ def preprocess_subworkflow_input( ch_input, ch_tools_args, method_field_name) {
             meta_clone["method"] = meta_clone.remove(method_field_name)
             return [meta_clone, input]
         }
+        .filter{ meta, input -> meta["method"] != []}
 }
 
 // function used to postprocess the output of a subworkflow
@@ -65,6 +66,7 @@ workflow EXPERIMENTAL {
     // NOTE that when only one tools pathway is provided, the pathway_name is not needed, and hence removed
     // by doing so, it avoids the recomputation of processes that use the same tool/args but belong to different pathways
 
+    ch_tools.view()
     ch_tools.count()
         .combine(ch_tools)
         .multiMap{
@@ -151,7 +153,6 @@ workflow EXPERIMENTAL {
         .set{ ch_adjacency_enr }
 
     // run enrichment subworkflow
-    // TODO don't run if no enrichment analysis is needed
 
     ENRICHMENT(
         ch_counts_enr,
