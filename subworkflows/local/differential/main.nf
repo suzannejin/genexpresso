@@ -145,7 +145,7 @@ workflow DIFFERENTIAL {
         .unique()
         .multiMap {
             meta_counts, counts, meta_samplesheet, samplesheet, meta_contrast, contrast_variable, reference, target ->
-                def meta = meta_counts.clone() + meta_contrast.clone()
+                def meta = meta_counts.clone() + ['contrast': meta_contrast.id]
                 input1:  [ meta, contrast_variable, reference, target ]
                 input2:  [ meta, samplesheet, counts ]
         }
