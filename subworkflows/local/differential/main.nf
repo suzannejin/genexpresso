@@ -8,17 +8,9 @@ include { LIMMA_DIFFERENTIAL } from '../../../modules/nf-core/limma/differential
 include { FILTER_DIFFTABLE as FILTER_DIFFTABLE_LIMMA } from '../../../modules/local/filter_difftable'
 include { FILTER_DIFFTABLE as FILTER_DIFFTABLE_DESEQ2 } from '../../../modules/local/filter_difftable'
 
-def correct_meta_data = { meta, data, pathway ->
-    def meta_clone = meta.clone() + pathway
-    meta_clone.remove('diff_method')
-    meta_clone.remove('args_diff')
-    return [meta_clone, data]
-}
-
 workflow DIFFERENTIAL {
     take:
-    ch_tools              // [ pathway_name, differential_map ]
-    ch_counts             // [ meta_exp, counts ]
+    ch_counts             // [ meta_exp, counts ] with meta keys: method, args_diff
     ch_samplesheet        // [ meta_exp, samplesheet ]
     ch_contrasts          // [ meta_contrast, contrast_variable, reference, target ]
 
@@ -32,13 +24,13 @@ workflow DIFFERENTIAL {
     ch_adjacency                 = Channel.empty()
 
     // branch tools to select the correct differential analysis method
-    ch_tools
+    ch_counts
         .branch {
-            propd:  it[1]["diff_method"] == "propd"
-            deseq2: it[1]["diff_method"] == "deseq2"
-            limma:  it[1]["diff_method"] == "limma"
+            propd:  it[0]["method"] == "propd"
+            deseq2: it[0]["method"] == "deseq2"
+            limma:  it[0]["method"] == "limma"
         }
-        .set { ch_tools_single }
+        .set { ch_counts }
 
     // ----------------------------------------------------
     // Perform differential analysis with propd
@@ -47,29 +39,23 @@ workflow DIFFERENTIAL {
     // TODO propd currently don't support blocking, so we should not run propd with same contrast_variable, reference and target,
     // but different blocking variable, since it will simply run the same analysis again.
 
-    ch_counts
-        .join(ch_samplesheet)
+    ch_counts.propd
+        .combine(ch_samplesheet)
+        .filter{ meta_counts, counts, meta_samplesheet, samplesheet -> meta_counts.subMap(meta_samplesheet.keySet()) == meta_samplesheet }
         .combine(ch_contrasts)
-        .combine(ch_tools_single.propd)
-        .multiMap {
-            meta_data, counts, samplesheet, meta_contrast, contrast_variable, reference, target, pathway, meta_tools ->
-                def meta = meta_data.clone() + ['contrast': meta_contrast.id] + meta_tools.clone()
-                input:   [ meta, counts, samplesheet, contrast_variable, reference, target ]
-                pathway: [ meta, pathway ]
+        .map {
+            meta_data, counts, meta_samplesheet, samplesheet, meta_contrast, contrast_variable, reference, target ->
+                def meta = meta_data.clone() + ['contrast': meta_contrast.id]
+                return [ meta, counts, samplesheet, contrast_variable, reference, target ]
         }
         .set { ch_propd }
 
-    PROPD(ch_propd.input.unique())
-    ch_results_pairwise          = PROPD.out.results
-                                        .join(ch_propd.pathway).map(correct_meta_data).mix(ch_results_pairwise)
-    ch_results_pairwise_filtered = PROPD.out.results_filtered
-                                        .join(ch_propd.pathway).map(correct_meta_data).mix(ch_results_pairwise_filtered)
-    ch_results_genewise          = PROPD.out.connectivity
-                                        .join(ch_propd.pathway).map(correct_meta_data).mix(ch_results_genewise)
-    ch_results_genewise_filtered = PROPD.out.hub_genes
-                                        .join(ch_propd.pathway).map(correct_meta_data).mix(ch_results_genewise_filtered)
-    ch_adjacency                 = PROPD.out.adjacency
-                                        .join(ch_propd.pathway).map(correct_meta_data).mix(ch_adjacency)
+    PROPD(ch_propd.unique())
+    ch_results_pairwise          = PROPD.out.results.mix(ch_results_pairwise)
+    ch_results_pairwise_filtered = PROPD.out.results_filtered.mix(ch_results_pairwise_filtered)
+    ch_results_genewise          = PROPD.out.connectivity.mix(ch_results_genewise)
+    ch_results_genewise_filtered = PROPD.out.hub_genes.mix(ch_results_genewise_filtered)
+    ch_adjacency                 = PROPD.out.adjacency.mix(ch_adjacency)
 
     // ----------------------------------------------------
     // Perform differential analysis with DESeq2
@@ -146,17 +132,16 @@ workflow DIFFERENTIAL {
 
     // combine the input channels with the tools information
     // in this way, limma will only be run if the user have specified it, as informed by ch_tools
-    ch_counts
-        .join(ch_samplesheet)
+    ch_counts.limma
+        .combine(ch_samplesheet)
+        .filter{ meta_counts, counts, meta_samplesheet, samplesheet -> meta_counts.subMap(meta_samplesheet.keySet()) == meta_samplesheet }
         .combine(ch_contrasts)
-        .combine(ch_tools_single.limma)
         .unique()
         .multiMap {
-            meta_data, counts, samplesheet, meta_contrast, contrast_variable, reference, target, pathway, meta_tools ->
-                def meta = meta_data.clone() + meta_contrast.clone() + meta_tools.clone()
+            meta_data, counts, meta_samplesheet, samplesheet, meta_contrast, contrast_variable, reference, target ->
+                def meta = meta_data.clone() + meta_contrast.clone()
                 input1:  [ meta, contrast_variable, reference, target ]
                 input2:  [ meta, samplesheet, counts ]
-                pathway: [ meta, pathway ]
         }
         .set { ch_limma }
 
@@ -176,10 +161,8 @@ workflow DIFFERENTIAL {
     )
 
     // collect results
-    ch_results_genewise = LIMMA_DIFFERENTIAL.out.results
-                            .join(ch_limma.pathway).map(correct_meta_data).mix(ch_results_genewise)
-    ch_results_genewise_filtered = FILTER_DIFFTABLE_LIMMA.out.filtered
-                            .join(ch_limma.pathway).map(correct_meta_data).mix(ch_results_genewise_filtered)
+    ch_results_genewise = LIMMA_DIFFERENTIAL.out.results.mix(ch_results_genewise)
+    ch_results_genewise_filtered = FILTER_DIFFTABLE_LIMMA.out.filtered.mix(ch_results_genewise_filtered)
 
     emit:
     results_pairwise          = ch_results_pairwise

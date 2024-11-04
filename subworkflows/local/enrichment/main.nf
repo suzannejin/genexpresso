@@ -7,17 +7,23 @@ include { GPROFILER2_GOST } from "../../../modules/nf-core/gprofiler2/gost/main.
 
 workflow ENRICHMENT {
     take:
-    ch_tools        // [ pathway_name, enrichment_map ]
-    ch_counts
-    ch_results_genewise
-    ch_results_genewise_filtered
-    ch_adjacency
+    ch_counts                       // [ meta, counts] with meta keys: method, args_cor
+    ch_results_genewise             // [ meta, results] with meta keys: method, args_cor
+    ch_results_genewise_filtered    // [ meta, results] with meta keys: method, args_cor
+    ch_adjacency                    // [ meta, adj_matrix] with meta keys: method, args_cor
     // TODO: add ch_gm when provided by user, etc.
 
     main:
 
     // initialize empty results channels
     ch_enriched = Channel.empty()
+    ch_gmt      = Channel.empty()
+
+    ch_adjacency
+        .branch {
+            grea: it[0]["method"] == "grea"
+        }
+        .set { ch_adjacency }
 
     // ----------------------------------------------------
     // Construct gene set database
@@ -32,21 +38,7 @@ workflow ENRICHMENT {
     // Perform enrichment analysis with GREA
     // ----------------------------------------------------
 
-    ch_adjacency
-        .map { meta, matrix -> [meta.subMap(["pathway_name"]), meta, matrix] }
-        .join(ch_tools, by: [0])
-        .map {
-            pathway_name, meta, matrix, meta_tools ->
-                def new_meta = meta.clone() + meta_tools.clone()
-                [ new_meta, matrix ]
-            }
-        .branch {
-            grea:  it[0]["enr_method"] == "grea"
-            gsea: it[0]["enr_method"] == "gsea"
-        }
-        .set { ch_adjacency }
-
-    GREA(ch_adjacency.grea, ch_gmt.collect()) //currently, ch_gmt.collect() returns an empty channel, so this does not run
+    GREA(ch_adjacency.grea.unique(), ch_gmt.collect())
     ch_enriched = ch_enriched.mix(GREA.out.results)
 
     // ----------------------------------------------------
@@ -72,19 +64,12 @@ workflow ENRICHMENT {
         ch_background = Channel.from(file(params.gprofiler2_background_file, checkIfExists: true))
     }
 
-    // rearrage channel for GPROFILER2_GOST process
+    // rearrange channel for GPROFILER2_GOST process
     ch_gmt = ch_gmt.map { meta, gmt -> gmt }
 
     ch_results_genewise_filtered
-        .map { meta, matrix -> [meta.subMap(["pathway_name"]), meta, matrix] }
-        .join(ch_tools, by: [0])
-        .map {
-            pathway_name, meta, matrix, meta_tools ->
-                def new_meta = meta.clone() + meta_tools.clone()
-                [ new_meta, matrix ]
-        }
-        .filter {
-            it[0].enr_method == "gprofiler2"
+        .branch {
+            grea: it[0]["method"] == "gprofiler2"
         }
         .set { ch_results_genewise_filtered }
 

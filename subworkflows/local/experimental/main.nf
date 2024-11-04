@@ -5,6 +5,28 @@ include { DIFFERENTIAL }        from '../differential/main.nf'
 include { CORRELATION }         from '../correlation/main.nf'
 include { ENRICHMENT }          from '../enrichment/main.nf'
 
+def preprocess_subworkflow_output( ch_input, ch_tools_args, method_field_name) {
+    // add method arguments to channel meta
+    return ch_input
+        .combine(ch_tools_args)
+        .filter{  meta, input, pathway, arg_maps -> meta["pathway_name"] ? meta["pathway_name"] == pathway["pathway_name"] : true }
+        .map{ meta, input, pathway, arg_map ->
+            def meta_clone = meta.clone() + pathway + arg_map.clone()
+            meta_clone["method"] = meta_clone.remove(method_field_name)
+            return [meta_clone, input]
+        }
+}
+
+def postprocess_subworkflow_output( ch_results, field_name ) {
+    // clean up meta data by removing tool arguments
+    return ch_results
+        .map{ meta, data ->
+            def meta_clone = meta.clone()
+            meta_clone.removeAll{it.key in field_name}
+            return [meta_clone, data]
+        }
+}
+
 workflow EXPERIMENTAL {
     take:
     ch_contrasts    // [ meta, contrast_variable, reference, target ]
@@ -15,9 +37,11 @@ workflow EXPERIMENTAL {
     main:
 
     // split toolsheet into channels
-    ch_tools
+    ch_tools.count()
+        .combine(ch_tools)
         .multiMap{
-            pathway_name, differential_map, correlation_map, enrichment_map ->
+            n, pathway, differential_map, correlation_map, enrichment_map ->
+                def pathway_name = n == 1 ? ["pathway_name":""] : pathway
                 diff: [ pathway_name, differential_map ]
                 corr: [ pathway_name, correlation_map ]
                 enr:  [ pathway_name, enrichment_map ]
@@ -37,39 +61,50 @@ workflow EXPERIMENTAL {
     // DIFFERENTIAL ANALYSIS BLOCK
     // ----------------------------------------------------
 
+    preprocess_subworkflow_output(ch_counts, ch_tools.diff, "diff_method")
+        .set{ ch_counts_diff }
     DIFFERENTIAL(
-        ch_tools.diff,
-        ch_counts,
+        ch_counts_diff,
         ch_samplesheet,
         ch_contrasts
     )
-    ch_results_pairwise = ch_results_pairwise.mix(DIFFERENTIAL.out.results_pairwise)
-    ch_results_pairwise_filtered = ch_results_pairwise_filtered.mix(DIFFERENTIAL.out.results_pairwise_filtered)
-    ch_results_genewise = ch_results_genewise.mix(DIFFERENTIAL.out.results_genewise)
-    ch_results_genewise_filtered = ch_results_genewise_filtered.mix(DIFFERENTIAL.out.results_genewise_filtered)
-    ch_adjacency = ch_adjacency.mix(DIFFERENTIAL.out.adjacency)
+    ch_results_pairwise          = postprocess_subworkflow_output(DIFFERENTIAL.out.results_pairwise,["method", "args_diff"]).mix(ch_results_pairwise)
+    ch_results_pairwise_filtered = postprocess_subworkflow_output(DIFFERENTIAL.out.results_pairwise_filtered,["method", "args_diff"]).mix(ch_results_pairwise_filtered)
+    ch_results_genewise          = postprocess_subworkflow_output(DIFFERENTIAL.out.results_genewise,["method", "args_diff"]).mix(ch_results_genewise)
+    ch_results_genewise_filtered = postprocess_subworkflow_output(DIFFERENTIAL.out.results_genewise_filtered,["method", "args_diff"]).mix(ch_results_genewise_filtered)
+    ch_adjacency                 = postprocess_subworkflow_output(DIFFERENTIAL.out.adjacency,["method", "args_diff"]).mix(ch_adjacency)
 
     // ----------------------------------------------------
     // CORRELATION ANALYSIS BLOCK
     // ----------------------------------------------------
 
+    preprocess_subworkflow_output(ch_counts, ch_tools.corr, "cor_method")
+        .set{ ch_counts_corr }
+
     CORRELATION(
-        ch_tools.corr,
-        ch_counts
+        ch_counts_corr
     )
-    ch_matrix = ch_matrix.mix(CORRELATION.out.matrix)
-    ch_adjacency = ch_adjacency.mix(CORRELATION.out.adjacency)
+    ch_matrix    = postprocess_subworkflow_output(CORRELATION.out.matrix,["method", "args_cor"]).mix(ch_matrix)
+    ch_adjacency = postprocess_subworkflow_output(CORRELATION.out.adjacency,["method", "args_cor"]).mix(ch_adjacency)
 
     // ----------------------------------------------------
     // FUNCTIONAL ENRICHMENT BLOCK
     // ----------------------------------------------------
 
+    preprocess_subworkflow_output(ch_counts, ch_tools.enr, "enr_method")
+        .set{ ch_counts_enr }
+    preprocess_subworkflow_output(ch_results_genewise, ch_tools.enr, "enr_method")
+        .set{ ch_results_genewise_enr }
+    preprocess_subworkflow_output(ch_results_genewise_filtered, ch_tools.enr, "enr_method")
+        .set{ ch_results_genewise_filtered_enr }
+    preprocess_subworkflow_output(ch_adjacency, ch_tools.enr, "enr_method")
+        .set{ ch_adjacency_enr }
+
     ENRICHMENT(
-        ch_tools.enr,
-        ch_counts,
-        ch_results_genewise,
-        ch_results_genewise_filtered,
-        ch_adjacency
+        ch_counts_enr,
+        ch_results_genewise_enr,
+        ch_results_genewise_filtered_enr,
+        ch_adjacency_enr
     )
     ch_enriched = ch_enriched.mix(ENRICHMENT.out.enriched)
 
