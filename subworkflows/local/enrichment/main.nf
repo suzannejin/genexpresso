@@ -3,6 +3,7 @@
 //
 include { MYGENE } from "../../../modules/nf-core/mygene/main.nf"
 include { PROPR_GREA as GREA } from "../../../modules/local/propr/grea/main.nf"
+include { GPROFILER2_GOST } from "../../../modules/nf-core/gprofiler2/gost/main.nf"
 
 include { GSEA_GSEA } from '../../../modules/nf-core/gsea/gsea/main.nf'
 include { CUSTOM_TABULARTOGSEAGCT } from '../../../modules/nf-core/custom/tabulartogseagct/main.nf'
@@ -11,22 +12,29 @@ include { TABULAR_TO_GSEA_CHIP } from '../../../modules/local/tabular_to_gsea_ch
 
 workflow ENRICHMENT {
     take:
-    ch_tools        // [ pathway_name, enrichment_map ]
-    ch_counts
-    ch_results_genewise
-    ch_results_genewise_filtered
-    ch_adjacency
+    ch_counts                       // [ meta, counts] with meta keys: method, args_cor
+    ch_results_genewise             // [ meta, results] with meta keys: method, args_cor
+    ch_results_genewise_filtered    // [ meta, results] with meta keys: method, args_cor
+    ch_adjacency                    // [ meta, adj_matrix] with meta keys: method, args_cor
     ch_contrasts
     ch_samplesheet
     ch_featuresheet
     ch_gene_sets
     ch_versions
+
     // TODO: add ch_gm when provided by user, etc.
 
     main:
 
     // initialize empty results channels
     ch_enriched = Channel.empty()
+    ch_gmt      = Channel.empty()
+
+    ch_adjacency
+        .branch {
+            grea: it[0]["method"] == "grea"
+        }
+        .set { ch_adjacency }
 
     // ----------------------------------------------------
     // Construct gene set database
@@ -41,28 +49,12 @@ workflow ENRICHMENT {
     // Perform enrichment analysis with GREA
     // ----------------------------------------------------
 
-    ch_adjacency
-        .map { meta, matrix -> [meta.subMap(["pathway_name"]), meta, matrix] }
-        .join(ch_tools, by: [0])
-        .map {
-            pathway_name, meta, matrix, meta_tools ->
-                def new_meta = meta.clone() + meta_tools.clone()
-                [ new_meta, matrix ]
-            }
-        .branch {
-            grea:  it[0]["enr_method"] == "grea"
-            gsea: it[0]["enr_method"] == "gsea"
-        }
-        .set { ch_adjacency }
-
-    GREA(ch_adjacency.grea, ch_gmt.collect())
+    GREA(ch_adjacency.grea.unique(), ch_gmt.collect())
     ch_enriched = ch_enriched.mix(GREA.out.results)
 
     // ----------------------------------------------------
     // Perform enrichment analysis with GSEA
     // ----------------------------------------------------
-
-    // todo: add gsea here
 
     // For GSEA, we need to convert normalised counts to a GCT format for
     // input, and process the sample sheet to generate class definitions
@@ -122,6 +114,28 @@ workflow ENRICHMENT {
     // ----------------------------------------------------
 
     // todo: add gprofiler2 here
+
+    // Define background file
+    if (!params.gprofiler2_background_file) {
+        // If deactivated, use empty list as "background"
+        ch_background = []
+    } else if (params.gprofiler2_background_file == "auto") {
+        // If auto, use input matrix as background
+        ch_background = ch_counts.map { meta, counts -> counts }
+    } else {
+        ch_background = Channel.from(file(params.gprofiler2_background_file, checkIfExists: true))
+    }
+
+    // rearrange channel for GPROFILER2_GOST process
+    ch_gmt = ch_gmt.map { meta, gmt -> gmt }
+
+    ch_results_genewise_filtered
+        .branch {
+            grea: it[0]["method"] == "gprofiler2"
+        }
+        .set { ch_results_genewise_filtered }
+
+    GPROFILER2_GOST(ch_results_genewise_filtered, ch_gmt, ch_background)
 
     emit:
     enriched = ch_enriched
