@@ -525,7 +525,6 @@ workflow DIFFERENTIALABUNDANCE {
         }
 
         // For gprofiler2, token and organism have priority and will override a gene_sets file
-
         GPROFILER2_GOST(
             ch_filtered_diff,
             ch_gene_sets.first(),
