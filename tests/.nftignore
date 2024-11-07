@@ -1,0 +1,10 @@
+pipeline_info/*.{html,json,txt,yml}
+report/gsea/**/*.symbols.pvalues_vs_nes_plot.png
+report/gsea/**/*.symbols.gset_rnd_es_dist_5.png
+report/gsea/**/*butterfly_plot.png
+report/gsea/**/*.gsea_report_for_hND6.tsv
+report/gsea/**/*.symbols.Gsea.rpt
+report/gsea/**/*.html
+report/*.html
+report/*.zip
+*html
