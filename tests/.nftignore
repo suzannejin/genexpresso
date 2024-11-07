@@ -5,6 +5,9 @@ report/gsea/**/*butterfly_plot.png
 report/gsea/**/*.gsea_report_for_hND6.tsv
 report/gsea/**/*.symbols.Gsea.rpt
 report/gsea/**/*.html
+report/gsea/phenotype_uninvolved_lesional/**/*.png
+report/gsea/**/phenotype_uninvolved_lesional.*.gsea_report_for_*.tsv
 report/*.html
 report/*.zip
 *html
+data.rds
