@@ -2,11 +2,11 @@ nextflow_pipeline {
 
     name "Test Workflow main.nf - DIFFERENTIALABUNDANCE"
     script "../main.nf"
-    profile "+test"
-    tag "test"
+    profile "+test_rnaseq_limma"
+    tag "rnaseq_limma"
     tag "pipeline"
 
-    test("Test profile") {
+    test("Test rnaseq limma profile") {
 
         when {
             params {

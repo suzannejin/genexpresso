@@ -2,11 +2,11 @@ nextflow_pipeline {
 
     name "Test Workflow main.nf - DIFFERENTIALABUNDANCE"
     script "../main.nf"
-    profile "+test"
-    tag "test"
+    profile "+test_nogtf"
+    tag "nogtf"
     tag "pipeline"
 
-    test("Test profile") {
+    test("Test no gtf profile") {
 
         when {
             params {
