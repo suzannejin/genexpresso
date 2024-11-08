@@ -10,4 +10,4 @@ report/gsea/**/phenotype_uninvolved_lesional.*.gsea_report_for_*.tsv
 report/*.html
 report/*.zip
 *html
-shinyngs_app/SRP254919/data.rds
+shinyngs_app/**/data.rds
