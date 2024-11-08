@@ -11,3 +11,7 @@ report/*.html
 report/*.zip
 *html
 shinyngs_app/**/data.rds
+report/gsea/phenotype_uninvolved_lesional/h.all.v2022.1.Hs.symbols/phenotype_uninvolved_lesional.h.all.v2022.1.Hs.symbols.HALLMARK_GLYCOLYSIS.html
+report/gsea/phenotype_uninvolved_lesional/h.all.v2022.1.Hs.symbols/phenotype_uninvolved_lesional.h.all.v2022.1.Hs.symbols.HALLMARK_GLYCOLYSIS.tsv
+report/gsea/phenotype_uninvolved_lesional/h.all.v2022.1.Hs.symbols/phenotype_uninvolved_lesional.h.all.v2022.1.Hs.symbols.HALLMARK_P53_PATHWAY.html
+report/gsea/phenotype_uninvolved_lesional/h.all.v2022.1.Hs.symbols/phenotype_uninvolved_lesional.h.all.v2022.1.Hs.symbols.HALLMARK_P53_PATHWAY.tsv
