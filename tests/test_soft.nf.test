@@ -1,6 +1,6 @@
 nextflow_pipeline {
 
-    name "Test Workflow main.nf - DIFFERENTIALABUNDANCE"
+    name "Test Workflow main.nf - DIFFERENTIALABUNDANCE (soft)"
     script "../main.nf"
     profile "+test_soft"
     tag "soft"

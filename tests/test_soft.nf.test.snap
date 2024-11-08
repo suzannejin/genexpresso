@@ -59,7 +59,6 @@
                 "versions.yml:md5,9c47cbf6f2f30c711eb57fff84ea3736",
                 "phenotype_uninvolved_lesional.limma.mean_difference.png:md5,570bc62fbad15b7b25eaea786a416ace",
                 "app.R:md5,bedcfc45b6cdcc2b8fe3627987e2b17a",
-                "data.rds:md5,71508ad31e0fb1b69ed569c85470f660",
                 "versions.yml:md5,892774f9d56ba10c8646736b7f777ecc",
                 "normalised.annotation.tsv:md5,40300ae222ae35fa54daf10a1b86e830",
                 "phenotype_uninvolved_lesional.limma.results.tsv:md5,2cfa653fffb034be4b82abf306c87bc5",
@@ -71,6 +70,6 @@
             "nf-test": "0.9.0",
             "nextflow": "24.10.0"
         },
-        "timestamp": "2024-11-07T16:45:37.804157158"
+        "timestamp": "2024-11-08T14:12:26.809162392"
     }
 }

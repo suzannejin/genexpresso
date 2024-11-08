@@ -61,6 +61,8 @@
                 "report/gsea/phenotype_uninvolved_lesional/h.all.v2022.1.Hs.symbols/phenotype_uninvolved_lesional.h.all.v2022.1.Hs.symbols.HALLMARK_FATTY_ACID_METABOLISM.tsv",
                 "report/gsea/phenotype_uninvolved_lesional/h.all.v2022.1.Hs.symbols/phenotype_uninvolved_lesional.h.all.v2022.1.Hs.symbols.HALLMARK_G2M_CHECKPOINT.html",
                 "report/gsea/phenotype_uninvolved_lesional/h.all.v2022.1.Hs.symbols/phenotype_uninvolved_lesional.h.all.v2022.1.Hs.symbols.HALLMARK_G2M_CHECKPOINT.tsv",
+                "report/gsea/phenotype_uninvolved_lesional/h.all.v2022.1.Hs.symbols/phenotype_uninvolved_lesional.h.all.v2022.1.Hs.symbols.HALLMARK_GLYCOLYSIS.html",
+                "report/gsea/phenotype_uninvolved_lesional/h.all.v2022.1.Hs.symbols/phenotype_uninvolved_lesional.h.all.v2022.1.Hs.symbols.HALLMARK_GLYCOLYSIS.tsv",
                 "report/gsea/phenotype_uninvolved_lesional/h.all.v2022.1.Hs.symbols/phenotype_uninvolved_lesional.h.all.v2022.1.Hs.symbols.HALLMARK_IL2_STAT5_SIGNALING.html",
                 "report/gsea/phenotype_uninvolved_lesional/h.all.v2022.1.Hs.symbols/phenotype_uninvolved_lesional.h.all.v2022.1.Hs.symbols.HALLMARK_IL2_STAT5_SIGNALING.tsv",
                 "report/gsea/phenotype_uninvolved_lesional/h.all.v2022.1.Hs.symbols/phenotype_uninvolved_lesional.h.all.v2022.1.Hs.symbols.HALLMARK_IL6_JAK_STAT3_SIGNALING.html",
@@ -87,8 +89,6 @@
                 "report/gsea/phenotype_uninvolved_lesional/h.all.v2022.1.Hs.symbols/phenotype_uninvolved_lesional.h.all.v2022.1.Hs.symbols.HALLMARK_NOTCH_SIGNALING.tsv",
                 "report/gsea/phenotype_uninvolved_lesional/h.all.v2022.1.Hs.symbols/phenotype_uninvolved_lesional.h.all.v2022.1.Hs.symbols.HALLMARK_OXIDATIVE_PHOSPHORYLATION.html",
                 "report/gsea/phenotype_uninvolved_lesional/h.all.v2022.1.Hs.symbols/phenotype_uninvolved_lesional.h.all.v2022.1.Hs.symbols.HALLMARK_OXIDATIVE_PHOSPHORYLATION.tsv",
-                "report/gsea/phenotype_uninvolved_lesional/h.all.v2022.1.Hs.symbols/phenotype_uninvolved_lesional.h.all.v2022.1.Hs.symbols.HALLMARK_P53_PATHWAY.html",
-                "report/gsea/phenotype_uninvolved_lesional/h.all.v2022.1.Hs.symbols/phenotype_uninvolved_lesional.h.all.v2022.1.Hs.symbols.HALLMARK_P53_PATHWAY.tsv",
                 "report/gsea/phenotype_uninvolved_lesional/h.all.v2022.1.Hs.symbols/phenotype_uninvolved_lesional.h.all.v2022.1.Hs.symbols.HALLMARK_PEROXISOME.html",
                 "report/gsea/phenotype_uninvolved_lesional/h.all.v2022.1.Hs.symbols/phenotype_uninvolved_lesional.h.all.v2022.1.Hs.symbols.HALLMARK_PEROXISOME.tsv",
                 "report/gsea/phenotype_uninvolved_lesional/h.all.v2022.1.Hs.symbols/phenotype_uninvolved_lesional.h.all.v2022.1.Hs.symbols.HALLMARK_PROTEIN_SECRETION.html",
@@ -167,6 +167,7 @@
                 "phenotype_uninvolved_lesional.h.all.v2022.1.Hs.symbols.HALLMARK_ESTROGEN_RESPONSE_EARLY.tsv:md5,695b5bd61210e9fd4e76993cee00c63d",
                 "phenotype_uninvolved_lesional.h.all.v2022.1.Hs.symbols.HALLMARK_FATTY_ACID_METABOLISM.tsv:md5,cb069d05610994d1e43ea84de165bcd0",
                 "phenotype_uninvolved_lesional.h.all.v2022.1.Hs.symbols.HALLMARK_G2M_CHECKPOINT.tsv:md5,09eba22af78006f69a9d0cb1bee27331",
+                "phenotype_uninvolved_lesional.h.all.v2022.1.Hs.symbols.HALLMARK_GLYCOLYSIS.tsv:md5,08c50f431cee394c0280f41345a07d96",
                 "phenotype_uninvolved_lesional.h.all.v2022.1.Hs.symbols.HALLMARK_IL2_STAT5_SIGNALING.tsv:md5,38824ee08434a02049cf7f57c43545d5",
                 "phenotype_uninvolved_lesional.h.all.v2022.1.Hs.symbols.HALLMARK_IL6_JAK_STAT3_SIGNALING.tsv:md5,ab80e349a52b1b17d350d488d552f2b6",
                 "phenotype_uninvolved_lesional.h.all.v2022.1.Hs.symbols.HALLMARK_INFLAMMATORY_RESPONSE.tsv:md5,99983d81cd0ee6bc9c5e078ea311147c",
@@ -180,7 +181,6 @@
                 "phenotype_uninvolved_lesional.h.all.v2022.1.Hs.symbols.HALLMARK_MYOGENESIS.tsv:md5,332f9386161436cd69d4b830e0f392d6",
                 "phenotype_uninvolved_lesional.h.all.v2022.1.Hs.symbols.HALLMARK_NOTCH_SIGNALING.tsv:md5,53bc5acac191f31dcdbfe62fcf396358",
                 "phenotype_uninvolved_lesional.h.all.v2022.1.Hs.symbols.HALLMARK_OXIDATIVE_PHOSPHORYLATION.tsv:md5,faab3d7cea1ff32b5c224587246ad34e",
-                "phenotype_uninvolved_lesional.h.all.v2022.1.Hs.symbols.HALLMARK_P53_PATHWAY.tsv:md5,4070abb7bce1b665cae361d1fafadc4a",
                 "phenotype_uninvolved_lesional.h.all.v2022.1.Hs.symbols.HALLMARK_PEROXISOME.tsv:md5,66a120807b07d920c876b65b3925264c",
                 "phenotype_uninvolved_lesional.h.all.v2022.1.Hs.symbols.HALLMARK_PROTEIN_SECRETION.tsv:md5,d13300c61a1e99a0b05ef18fac74c42d",
                 "phenotype_uninvolved_lesional.h.all.v2022.1.Hs.symbols.HALLMARK_REACTIVE_OXYGEN_SPECIES_PATHWAY.tsv:md5,33429d1e3f2342c6c0e7b499035bd8da",
@@ -193,7 +193,6 @@
                 "phenotype_uninvolved_lesional.h.all.v2022.1.Hs.symbols.gene_set_sizes.tsv:md5,77b53b0ca686ede9fe15ca448340f9f5",
                 "phenotype_uninvolved_lesional.h.all.v2022.1.Hs.symbols.ranked_gene_list_lesional_versus_uninvolved.tsv:md5,72dfaeff534ba9a2b32f63524e835dc4",
                 "app.R:md5,bedcfc45b6cdcc2b8fe3627987e2b17a",
-                "data.rds:md5,12443200d8ebe6a8e9d5409d5592dbc9",
                 "versions.yml:md5,892774f9d56ba10c8646736b7f777ecc",
                 "hgu133plus2.annotation.tsv:md5,f2b82ef12b2a2e8e575de06766583d96",
                 "phenotype_uninvolved_lesional.limma.results.tsv:md5,686e871be0f1b435e161f84f6518cfc3",
@@ -214,6 +213,6 @@
             "nf-test": "0.9.0",
             "nextflow": "24.10.0"
         },
-        "timestamp": "2024-11-07T18:45:19.680294927"
+        "timestamp": "2024-11-08T14:04:25.71001709"
     }
 }

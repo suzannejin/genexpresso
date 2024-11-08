@@ -1,6 +1,6 @@
 nextflow_pipeline {
 
-    name "Test Workflow main.nf - DIFFERENTIALABUNDANCE"
+    name "Test Workflow main.nf - DIFFERENTIALABUNDANCE (limma)"
     script "../main.nf"
     profile "+test_rnaseq_limma"
     tag "rnaseq_limma"

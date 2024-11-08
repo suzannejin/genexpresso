@@ -69,7 +69,6 @@
                 "treatment_mCherry_hND6_.deseq2.dispersion.png:md5,ed14d196fadbe460d560982ef1e2ac91",
                 "treatment_mCherry_hND6_sample_number.deseq2.dispersion.png:md5,d0f07f97c7f5c660b173d85b85ed50b9",
                 "app.R:md5,bedcfc45b6cdcc2b8fe3627987e2b17a",
-                "data.rds:md5,341874520c0d16c2eca5388e3585c6b2",
                 "versions.yml:md5,892774f9d56ba10c8646736b7f777ecc",
                 "treatment_mCherry_hND6_.deseq2.results.tsv:md5,d9e894aeb89aa5bc79bf7ce31304d7c0",
                 "treatment_mCherry_hND6_.deseq2.results_filtered.tsv:md5,630820ec91287d8bcb2e5882431c09c3",
@@ -83,6 +82,6 @@
             "nf-test": "0.9.0",
             "nextflow": "24.10.0"
         },
-        "timestamp": "2024-11-07T16:59:16.942778374"
+        "timestamp": "2024-11-08T14:08:09.370720729"
     }
 }

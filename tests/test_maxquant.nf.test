@@ -1,6 +1,6 @@
 nextflow_pipeline {
 
-    name "Test Workflow main.nf - DIFFERENTIALABUNDANCE"
+    name "Test Workflow main.nf - DIFFERENTIALABUNDANCE (maxquant)"
     script "../main.nf"
     profile "+test_maxquant"
     tag "maxquant"
