@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- [[#344](https://github.com/nf-core/differentialabundance/pull/344)] - Fixed replacement of NA sub-strings
+  ([@atrigila](https://github.com/atrigila), suggested by [@BEFH](https://github.com/BEFH), review by [@](https://github.com/))
 - [[#342](https://github.com/nf-core/differentialabundance/pull/342)] - Fixed incorrectly colored dots in report volcano plots for logFC thresholds <1 ([@WackerO](https://github.com/WackerO), review by [@pinin4fjords](https://github.com/pinin4fjords))
 - [[#330](https://github.com/nf-core/differentialabundance/pull/330)] - Fixed broken docs by removing g:profiler colons ([@WackerO](https://github.com/WackerO), review by [@pinin4fjords](https://github.com/pinin4fjords))
 - [[#304](https://github.com/nf-core/differentialabundance/pull/304)] - Removed TXT file options from nextflow_schema where they are equivalent to TSV to make the input files clearer ([@WackerO](https://github.com/WackerO), review by [@pinin4fjords](https://github.com/pinin4fjords))
