@@ -899,9 +899,9 @@ for (i in 1:nrow(contrasts)){
         # Plot Differentially Expressed Genes by Gene Biotype
         gene_biotype_table <- contrast_de %>%
             group_by(`Gene biotype`) %>%
-            dplyr::summarise(count = dplyr::n(), .groups = 'drop') %>%
-            dplyr::filter(count > 0) %>%
-            dplyr::arrange(desc(count))
+            summarise(count = dplyr::n(), .groups = 'drop') %>%
+            filter(count > 0) %>%
+            arrange(desc(count))
 
         gene_biotype_plot <- ggplot(gene_biotype_table, aes(x = reorder(`Gene biotype`, -count), y = count)) +
             geom_bar(stat = "identity", position = position_dodge()) +
