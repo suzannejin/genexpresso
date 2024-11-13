@@ -20,7 +20,6 @@ workflow ENRICHMENT {
     ch_samplesheet
     ch_featuresheet
     ch_gene_sets
-    ch_versions
 
     // TODO: add ch_gm when provided by user, etc.
 
@@ -29,6 +28,13 @@ workflow ENRICHMENT {
     // initialize empty results channels
     ch_enriched = Channel.empty()
     ch_gmt      = Channel.empty()
+    ch_versions = Channel.empty()
+
+    ch_counts
+        .branch {
+            gsea: it[0]["method"] == "gsea"
+        }
+        .set { ch_counts }
 
     ch_adjacency
         .branch {
@@ -41,7 +47,7 @@ workflow ENRICHMENT {
     // ----------------------------------------------------
 
     // TODO this should be optional, only run when there is no gene set data provided by user
-
+    // TODO Use ch_gene_sets if it is not null
     MYGENE(ch_counts.take(1))  // only one data is provided to this pipeline
     ch_gmt = MYGENE.out.gmt
 
@@ -84,8 +90,9 @@ workflow ENRICHMENT {
         .map{ it.tail() }
         .combine(CUSTOM_TABULARTOGSEACLS.out.cls)
         .map{ tuple(it[1], it[0], it[2]) }
-        .combine(ch_gene_sets)
+        .combine( ch_gmt.map { meta, gmt -> gmt } )
 
+    println("__"+TABULAR_TO_GSEA_CHIP.out.chip)
     GSEA_GSEA(
         ch_gsea_inputs,
         ch_gsea_inputs.map{ tuple(it[0].reference, it[0].target) }, // *
@@ -139,4 +146,5 @@ workflow ENRICHMENT {
 
     emit:
     enriched = ch_enriched
+    versions = ch_versions
 }

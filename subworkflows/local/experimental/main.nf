@@ -35,9 +35,10 @@ workflow EXPERIMENTAL {
     ch_gene_sets
     ch_counts       // [ meta, counts]
     ch_tools        // [ pathway_name, differential_map, correlation_map, enrichment_map ]
-    ch_versions
 
     main:
+
+    ch_versions = Channel.empty()
 
     // split toolsheet into channels
     ch_tools.count()
@@ -76,6 +77,7 @@ workflow EXPERIMENTAL {
     ch_results_genewise          = postprocess_subworkflow_output(DIFFERENTIAL.out.results_genewise,["method", "args_diff"]).mix(ch_results_genewise)
     ch_results_genewise_filtered = postprocess_subworkflow_output(DIFFERENTIAL.out.results_genewise_filtered,["method", "args_diff"]).mix(ch_results_genewise_filtered)
     ch_adjacency                 = postprocess_subworkflow_output(DIFFERENTIAL.out.adjacency,["method", "args_diff"]).mix(ch_adjacency)
+    // ch_versions                  = ch_versions.mix(DIFFERENTIAL.out.versions)
 
     // ----------------------------------------------------
     // CORRELATION ANALYSIS BLOCK
@@ -89,6 +91,7 @@ workflow EXPERIMENTAL {
     )
     ch_matrix    = postprocess_subworkflow_output(CORRELATION.out.matrix,["method", "args_cor"]).mix(ch_matrix)
     ch_adjacency = postprocess_subworkflow_output(CORRELATION.out.adjacency,["method", "args_cor"]).mix(ch_adjacency)
+    // ch_versions  = ch_versions.mix(CORRELATION.out.versions)
 
     // ----------------------------------------------------
     // FUNCTIONAL ENRICHMENT BLOCK
@@ -107,17 +110,21 @@ workflow EXPERIMENTAL {
         ch_counts_enr,
         ch_results_genewise_enr,
         ch_results_genewise_filtered_enr,
-        ch_adjacency_enr
+        ch_adjacency_enr,
         ch_contrasts,
         ch_samplesheet,
         ch_featuresheet,
-        ch_gene_sets,
+        ch_gene_sets
     )
     ch_enriched = ch_enriched.mix(ENRICHMENT.out.enriched)
+    ch_versions = ch_versions.mix(ENRICHMENT.out.versions)
 
     // ----------------------------------------------------
     // VISUALIZATION BLOCK
     // ----------------------------------------------------
 
     // TODO: call visualization stuff here
+
+    emit:
+    versions = ch_versions
 }
