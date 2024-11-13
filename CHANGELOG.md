@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- [[#345](https://github.com/nf-core/differentialabundance/pull/345)] - Plot differentially expressed genes by gene biotype ([@atrigila](https://github.com/atrigila), review by [@](https://github.com/))
 - [[#343](https://github.com/nf-core/differentialabundance/pull/343)] - Add pipeline-level nf-tests ([@atrigila](https://github.com/atrigila), review by [@pinin4fjords](https://github.com/pinin4fjords) and [@nschcolnicov](https://github.com/nschcolnicov))
 - [[#286](https://github.com/nf-core/differentialabundance/pull/286)] - Integration of limma voom for rnaseq data ([@KamilMaliszArdigen](https://github.com/KamilMaliszArdigen), review by [@pinin4fjords](https://github.com/pinin4fjords))
 
