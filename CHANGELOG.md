@@ -26,6 +26,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- [[#347](https://github.com/nf-core/differentialabundance/pull/272)] - Update test_full profile matrix file and indentation of profiles in nextflow.config [@nschcolnicov](https://github.com/nschcolnicov)
+
 ## v1.5.0 - 2024-05-08
 
 ### `Added`
