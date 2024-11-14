@@ -27,10 +27,6 @@ ch_features = ch_abundance
 // contrasts file channel
 ch_contrasts = Channel.from([[exp_meta, file(params.contrasts)]])
 
-// optional files channels
-if (params.transcript_length_matrix) { ch_transcript_lengths = Channel.of([ exp_meta, file(params.transcript_length_matrix, checkIfExists: true)]).first() } else { ch_transcript_lengths = [[],[]] }
-if (params.control_features) { ch_control_features = Channel.of([ exp_meta, file(params.control_features, checkIfExists: true)]).first() } else { ch_control_features = [[],[]] }
-
 // gene sets
 gene_sets_files = params.gene_sets_files.split(",")
 ch_gene_sets = Channel.of(gene_sets_files).map { file(it, checkIfExists: true) }
@@ -75,11 +71,12 @@ def preprocess_channel(ch_input, method_type, method_name) {
     args_field_name = "args_" + method_type
 
     return ch_input
+            .filter { it[0][method_field_name] != null }
             .filter{ it[0][method_field_name] == method_name }
             .map { it ->
-                def tools = it[0]
-                def meta = it[1] + [ 'pathway_name': tools[pathway_name], 'args': tools[args_field_name] ]
-                def data = it[2..-1]
+                def tools = it[0].clone()
+                def meta = it[1].clone() + [ 'pathway_name': tools['pathway_name'], 'args': tools[args_field_name] ]
+                def data = it[2..-1].clone()
                 return [meta, data].flatten()
             }
 }
@@ -223,13 +220,10 @@ workflow DIFFERENTIALABUNDANCE {
 
     // Filter the tools to the pathway(s) of interest (as indicated by --pathway flag),
     // or run everything if requested (if --pathway all)
-    if (params.pathway == "all") {
-        ch_tools
-            .set{ ch_tools }
-    } else {
+    if (params.pathway != "all") {
         ch_tools
             .filter{
-                it["pathway_name"] in params.pathway.tokenize(',')
+                it[0]["pathway_name"] in params.pathway.tokenize(',')
             }
             .set{ ch_tools }
     }
@@ -241,9 +235,6 @@ workflow DIFFERENTIALABUNDANCE {
     ch_abundance_with_method = ch_tools.combine(ch_abundance)
     ch_features_with_method = ch_tools.combine(ch_features)
     ch_contrasts_with_method = ch_tools.combine(ch_contrasts)
-
-    ch_transcript_lengths_with_method = ch_tools.combine(ch_transcript_lengths)
-    ch_control_features_with_method = ch_tools.combine(ch_control_features)
     ch_gene_sets_with_method = ch_tools.combine(ch_gene_sets)
 
     // ----------------------------------------
@@ -254,8 +245,8 @@ workflow DIFFERENTIALABUNDANCE {
 
     DIFF_DESEQ2(
         preprocess_channel(ch_abundance_with_method, "diff", "deseq2"),
-        preprocess_channel(ch_transcript_lengths_with_method, "diff", "deseq2"),
-        preprocess_channel(ch_control_features_with_method, "diff", "deseq2"),
+        [[], []],
+        [[], []],
         preprocess_channel(ch_samplesheet_with_method, "diff", "deseq2"),
         preprocess_channel(ch_contrasts_with_method, "diff", "deseq2"),
         "deseq2",
@@ -272,8 +263,8 @@ workflow DIFFERENTIALABUNDANCE {
 
     DIFF_LIMMA(
         preprocess_channel(ch_abundance_with_method, "diff", "limma"),
-        preprocess_channel(ch_transcript_lengths_with_method, "diff", "limma"),
-        preprocess_channel(ch_control_features_with_method, "diff", "limma"),
+        [[], []],
+        [[], []],
         preprocess_channel(ch_samplesheet_with_method, "diff", "limma"),
         preprocess_channel(ch_contrasts_with_method, "diff", "limma"),
         "limma",
@@ -292,11 +283,14 @@ workflow DIFFERENTIALABUNDANCE {
 
     // run gprofiler2
 
-    GPROFILER2_GOST(
-        preprocess_channel(ch_results_genewise_filtered, "enr", "gprofiler2"),
-        preprocess_channel(ch_gene_sets_with_method, "enr", "gprofiler2"),
-        preprocess_channel(ch_abundance_with_method, "enr", "gprofiler2").map { meta, abundance -> abundance }
-    )
+    ch_results_genewise_filtered.view()
+    // preprocess_channel(ch_results_genewise_filtered, "enr", "gprofiler2").view()
+
+    // GPROFILER2_GOST(
+    //     preprocess_channel(ch_results_genewise_filtered, "enr", "gprofiler2"),
+    //     preprocess_channel(ch_gene_sets_with_method, "enr", "gprofiler2"),
+    //     preprocess_channel(ch_abundance_with_method, "enr", "gprofiler2").map { meta, abundance -> abundance }
+    // )
 
 }
 
