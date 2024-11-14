@@ -28,8 +28,7 @@ ch_features = ch_abundance
 ch_contrasts = Channel.from([[exp_meta, file(params.contrasts)]])
 
 // gene sets
-gene_sets_files = params.gene_sets_files.split(",")
-ch_gene_sets = Channel.of(gene_sets_files).map { file(it, checkIfExists: true) }
+ch_gene_sets = Channel.of([exp_meta, file(params.gene_sets_files, checkIfExists: true)])
 
 //other files
 report_file = file(params.report_file, checkIfExists: true)
@@ -65,13 +64,15 @@ def preprocess_channel(ch_input, method_type, method_name) {
         method_type = 'diff'
         method_name = 'deseq2'
         return [ [id: 'data1', pathway_name: 'deseq2_with_gsea', args: '--deseq2_param1: x'], data ]
+
+        NOTE that it assumes ch_input has structure [meta, ...]
     */
 
-    method_field_name = method_type + "_method"
-    args_field_name = "args_" + method_type
+    def method_field_name = method_type + "_method"
+    def args_field_name = "args_" + method_type
 
     return ch_input
-            .filter { it[0][method_field_name] != null }
+            .filter { it[0][method_field_name] != [] }
             .filter{ it[0][method_field_name] == method_name }
             .map { it ->
                 def tools = it[0].clone()
@@ -94,6 +95,8 @@ def postprocess_channel(ch_input, ch_tools, method_type, method_name) {
                 [id: 'data1'],
                 deseq2_results
                 ]
+
+        NOTE that it assumes ch_input has structure [meta, ...]
     */
 
     method_field_name = method_type + "_method"
@@ -283,14 +286,11 @@ workflow DIFFERENTIALABUNDANCE {
 
     // run gprofiler2
 
-    ch_results_genewise_filtered.view()
-    // preprocess_channel(ch_results_genewise_filtered, "enr", "gprofiler2").view()
-
-    // GPROFILER2_GOST(
-    //     preprocess_channel(ch_results_genewise_filtered, "enr", "gprofiler2"),
-    //     preprocess_channel(ch_gene_sets_with_method, "enr", "gprofiler2"),
-    //     preprocess_channel(ch_abundance_with_method, "enr", "gprofiler2").map { meta, abundance -> abundance }
-    // )
+    GPROFILER2_GOST(
+        preprocess_channel(ch_results_genewise_filtered, "enr", "gprofiler2"),
+        preprocess_channel(ch_gene_sets_with_method, "enr", "gprofiler2").map { meta, gene_sets -> gene_sets },
+        preprocess_channel(ch_abundance_with_method, "enr", "gprofiler2").map { meta, abundance -> abundance }
+    )
 
 }
 
