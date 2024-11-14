@@ -282,6 +282,9 @@ workflow DIFFERENTIALABUNDANCE {
     // RUN ENRICHMENT ANALYSIS
     // ----------------------------------------
 
+    // this section should also call the enrichment subworkflow in the same way as above,
+    // but for the moment, i will just run on gprofiler2 as example
+
     // run gsea
 
     // run gprofiler2
