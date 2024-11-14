@@ -370,10 +370,17 @@ differential_files <- lapply(contrasts$id, function(d){
     file.path(params$input_dir, paste0(gsub(' |;', '_', d), differential_file_suffix))
 })
 
-differential_results <- lapply(differential_files, function(diff_file){
-    if (! file.exists(diff_file)){
+# Initialize vector to store warning messages before merging tables
+warnings_list <- c()
+
+# Read differential results and merge with features table
+results <- lapply(differential_files, function(diff_file) {
+    warnings <- c()  # Initialize local warning vector
+
+    if (!file.exists(diff_file)) {
         stop(paste("Differential file", diff_file, "does not exist"))
     }
+
     diff <- read_differential(
         diff_file,
         feature_id_column = params$differential_feature_id_column,
@@ -382,19 +389,43 @@ differential_results <- lapply(differential_files, function(diff_file){
         qval_column = params$differential_qval_column
     )
 
-    # If fold changes are not logged already, log them (we assume they're logged
-    # later on)
-
-    if (! params$differential_foldchanges_logged){
+    # If fold changes are not logged already, log them
+    if (!params$differential_foldchanges_logged) {
         diff[[params$differential_fc_column]] <- log2(diff[[params$differential_fc_column]])
     }
 
     # Annotate differential tables if possible
-    if (! is.null(params$features)){
-        diff <- merge(features, diff, by.x = params$features_id_col, by.y = params$differential_feature_id_column)
+    if (!is.null(params$features)) {
+
+        # Merge tables
+        diff_features <- merge(features, diff, by.x = params$features_id_col, by.y = params$differential_feature_id_column)
+
+        # Get number of rows before and after merging
+        length_diff <- as.numeric(nrow(diff))
+        length_features <- as.numeric(nrow(diff_features))
+
+        # Compare numbers and report
+        if (length_diff != length_features) {
+            warnings <- c(warnings,
+                paste0(
+                    '<p style="color:red;"><strong>WARNING:</strong> Some rows from the differential expressed table (', basename(diff_file), ') were lost after merging with features table (', basename(params$features), ').\n',
+                    'Rows in diff table: ', length_diff, '.\n',
+                    'Rows in merged table: ', length_features, '.</p>\n'
+                )
+            )
+        }
+    } else {
+        diff_features <- diff
     }
-    diff
+
+    # Return both the results and the local warnings
+    list(diff_features = diff_features, warnings = warnings)
 })
+
+# Separate differential_results and warnings_list from results
+differential_results <- lapply(results, `[[`, "diff_features")
+warnings_list <- unlist(lapply(results, `[[`, "warnings"))
+
 names(differential_results) <- contrasts$id
 ```
 
@@ -787,7 +818,6 @@ foo <- lapply(names(p_value_types), function(pvt){
 ```
 
 ```{r, echo=FALSE, results='asis', eval = FALSE}
-
 differential_summary_string <- paste(
     paste(
     lapply(
@@ -806,7 +836,13 @@ cat(differential_summary_string)
 
 ### Differential `r params$features_type` details
 
-```{r, echo=FALSE, results='asis'}
+```{r, echo=FALSE, results='asis', warning=FALSE, message=FALSE}
+
+# Display all warnings related to number of rows
+if (length(warnings_list) > 0) {
+    for (warning in warnings_list) { cat(warning) }
+}
+
 for (i in 1:nrow(contrasts)){
     cat("\n#### ", contrast_descriptions[i], "  {.tabset}\n")
 
