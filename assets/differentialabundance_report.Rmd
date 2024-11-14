@@ -399,8 +399,6 @@ results <- lapply(differential_files, function(diff_file) {
 
         # Merge tables
         diff_features <- merge(features, diff, by.x = params$features_id_col, by.y = params$differential_feature_id_column)
-        # test
-        diff_features <- diff_features[1:50,]
 
         # Get number of rows before and after merging
         length_diff <- as.numeric(nrow(diff))
