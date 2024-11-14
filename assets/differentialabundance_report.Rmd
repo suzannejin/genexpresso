@@ -399,6 +399,8 @@ results <- lapply(differential_files, function(diff_file) {
 
         # Merge tables
         diff_features <- merge(features, diff, by.x = params$features_id_col, by.y = params$differential_feature_id_column)
+        # test
+        diff_features <- diff_features[1:50,]
 
         # Get number of rows before and after merging
         length_diff <- as.numeric(nrow(diff))
@@ -408,7 +410,7 @@ results <- lapply(differential_files, function(diff_file) {
         if (length_diff != length_features) {
             warnings <- c(warnings,
                 paste0(
-                    '<p style="color:red;"><strong>WARNING:</strong> Some rows from the differential expressed table (', basename(diff_file), ') were lost after merging with features table (', basename(params$features), ').\n',
+                    '<p style="color:#DAA520;"><strong>WARNING:</strong> Some rows from the differential expressed table (', basename(diff_file), ') were lost after merging with features table (', basename(params$features), ').\n',
                     'Rows in diff table: ', length_diff, '.\n',
                     'Rows in merged table: ', length_features, '.</p>\n'
                 )
