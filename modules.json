@@ -62,7 +62,7 @@
                     },
                     "limma/differential": {
                         "branch": "master",
-                        "git_sha": "9326d73af3fbe2ee90d9ce0a737461a727c5118e",
+                        "git_sha": "136f443c0a6d5c526410c7c9b73ce51ef457c341",
                         "installed_by": ["abundance_differential_filter", "modules"]
                     },
                     "mygene": {
