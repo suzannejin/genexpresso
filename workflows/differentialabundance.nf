@@ -391,6 +391,8 @@ workflow DIFFERENTIALABUNDANCE {
             ch_gene_sets,
             CUSTOM_MATRIXFILTER.out.filtered,
             ch_tools,
+            ch_transcript_lengths,
+            ch_control_features
         )
 
         // TODO for the moment, these channels are allocated to not breaking the next part.

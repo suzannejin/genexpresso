@@ -49,7 +49,8 @@ workflow ENRICHMENT {
     // TODO this should be optional, only run when there is no gene set data provided by user
     // TODO Use ch_gene_sets if it is not null
     MYGENE(ch_counts.take(1))  // only one data is provided to this pipeline
-    ch_gmt = MYGENE.out.gmt
+    ch_gmt      = MYGENE.out.gmt
+    ch_versions = ch_versions.mix(MYGENE.out.versions)
 
     // ----------------------------------------------------
     // Perform enrichment analysis with GREA
@@ -57,6 +58,7 @@ workflow ENRICHMENT {
 
     GREA(ch_adjacency.grea.unique(), ch_gmt.collect())
     ch_enriched = ch_enriched.mix(GREA.out.results)
+    ch_versions = ch_versions.mix(GREA.out.versions)
 
     // ----------------------------------------------------
     // Perform enrichment analysis with GSEA
@@ -143,8 +145,9 @@ workflow ENRICHMENT {
         .set { ch_results_genewise_filtered }
 
     GPROFILER2_GOST(ch_results_genewise_filtered, ch_gmt, ch_background)
+    ch_versions = ch_versions.mix(GPROFILER2_GOST.out.versions)
 
     emit:
-    enriched = ch_enriched
-    versions = ch_versions
+    enriched = ch_enriched  // channel: [ tsv ]
+    versions = ch_versions  // channel: [ versions.yml ]
 }
