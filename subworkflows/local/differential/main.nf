@@ -13,6 +13,8 @@ workflow DIFFERENTIAL {
     ch_counts             // [ meta_exp, counts ] with meta keys: method, args_diff
     ch_samplesheet        // [ meta_exp, samplesheet ]
     ch_contrasts          // [ meta_contrast, contrast_variable, reference, target ]
+    ch_transcript_lengths
+    ch_control_features
 
     main:
 
@@ -22,6 +24,7 @@ workflow DIFFERENTIAL {
     ch_results_genewise          = Channel.empty()
     ch_results_genewise_filtered = Channel.empty()
     ch_adjacency                 = Channel.empty()
+    ch_versions                  = Channel.empty()
 
     // branch tools to select the correct differential analysis method
     ch_counts
@@ -56,28 +59,21 @@ workflow DIFFERENTIAL {
     ch_results_genewise          = PROPD.out.connectivity.mix(ch_results_genewise)
     ch_results_genewise_filtered = PROPD.out.hub_genes.mix(ch_results_genewise_filtered)
     ch_adjacency                 = PROPD.out.adjacency.mix(ch_adjacency)
+    ch_versions                  = PROPD.out.versions.mix(ch_versions)
 
     // ----------------------------------------------------
     // Perform differential analysis with DESeq2
     // ----------------------------------------------------
 
-    if (params.transcript_length_matrix) { ch_transcript_lengths = Channel.of([ exp_meta, file(params.transcript_length_matrix, checkIfExists: true)]).first() } else { ch_transcript_lengths = Channel.of([[],[]]) }
-    if (params.control_features) { ch_control_features = Channel.of([ exp_meta, file(params.control_features, checkIfExists: true)]).first() } else { ch_control_features = Channel.of([[],[]]) }
-
-    ch_counts
-        .join(ch_samplesheet)
+    ch_counts.deseq2
+        .combine(ch_samplesheet)
+        .filter{ meta_counts, counts, meta_samplesheet, samplesheet -> meta_counts.subMap(meta_samplesheet.keySet()) == meta_samplesheet }
         .combine(ch_contrasts)
-        .combine(ch_transcript_lengths)
-        .combine(ch_control_features)
-        .combine(ch_tools_single.deseq2)
         .multiMap {
-            meta_data, counts, samplesheet, meta_contrast, contrast_variable, reference, target, meta_lengths, lengths, meta_control, control, pathway, meta_tools ->
-                def meta = meta_data.clone() + meta_contrast.clone() + meta_lengths.clone() + meta_control.clone() + meta_tools.clone()
+            meta_data, counts, meta_samplesheet, samplesheet, meta_contrast, contrast_variable, reference, target ->
+                def meta = meta_data.clone() + meta_contrast.clone()
                 contrast: [ meta, contrast_variable, reference, target ]
                 samples_and_matrix: [ meta, samplesheet, counts ]
-                control_features:   [ meta, control ]
-                transcript_lengths: [ meta, lengths ]
-                pathway: [ meta, pathway ]
         }
         .set { ch_deseq2 }
 
@@ -85,20 +81,21 @@ workflow DIFFERENTIAL {
     DESEQ2_NORM (
             ch_deseq2.contrast.first(),
             ch_deseq2.samples_and_matrix,
-            ch_deseq2.control_features,
-            ch_deseq2.transcript_lengths
+            ch_control_features,
+            ch_transcript_lengths
         )
 
     DESEQ2_DIFFERENTIAL (
             ch_deseq2.contrast,
             ch_deseq2.samples_and_matrix,
-            ch_deseq2.control_features,
-            ch_deseq2.transcript_lengths
+            ch_control_features,
+            ch_transcript_lengths
         )
 
-    ch_norm_deseq2 = DESEQ2_NORM.out.normalised_counts
+    ch_norm_deseq2         = DESEQ2_NORM.out.normalised_counts
     ch_differential_deseq2 = DESEQ2_DIFFERENTIAL.out.results
-    ch_model_deseq2 = DESEQ2_DIFFERENTIAL.out.model
+    ch_model_deseq2        = DESEQ2_DIFFERENTIAL.out.model
+    ch_versions            = DESEQ2_DIFFERENTIAL.out.versions.mix(ch_versions)
 
     ch_processed_matrices = ch_norm_deseq2
     if ('rlog' in params.deseq2_vs_method){
@@ -120,11 +117,9 @@ workflow DIFFERENTIAL {
         ch_padj_deseq2
     )
 
-    ch_results_genewise = DESEQ2_DIFFERENTIAL.out.results
-                            .join(ch_deseq2.pathway).map(correct_meta_data).mix(ch_results_genewise)
-
-    ch_results_genewise_filtered = FILTER_DIFFTABLE_DESEQ2.out.filtered
-                            .join(ch_deseq2.pathway).map(correct_meta_data).mix(ch_results_genewise_filtered)
+    ch_results_genewise          = DESEQ2_DIFFERENTIAL.out.results.mix(ch_results_genewise)
+    ch_results_genewise_filtered = FILTER_DIFFTABLE_DESEQ2.out.filtered.mix(ch_results_genewise_filtered)
+    ch_versions                  = FILTER_DIFFTABLE_DESEQ2.out.versions.mix(ch_versions)
 
     // ----------------------------------------------------
     // Perform differential analysis with limma
@@ -148,6 +143,7 @@ workflow DIFFERENTIAL {
 
     // run limma
     LIMMA_DIFFERENTIAL(ch_limma.input1, ch_limma.input2)
+    ch_versions = LIMMA_DIFFERENTIAL.out.versions.mix(ch_versions)
 
     // filter results
     // note that these are column names specific for limma output table
@@ -161,13 +157,15 @@ workflow DIFFERENTIAL {
     )
 
     // collect results
-    ch_results_genewise = LIMMA_DIFFERENTIAL.out.results.mix(ch_results_genewise)
+    ch_results_genewise          = LIMMA_DIFFERENTIAL.out.results.mix(ch_results_genewise)
     ch_results_genewise_filtered = FILTER_DIFFTABLE_LIMMA.out.filtered.mix(ch_results_genewise_filtered)
+    ch_versions                  = FILTER_DIFFTABLE_LIMMA.out.versions.mix(ch_versions)
 
     emit:
-    results_pairwise          = ch_results_pairwise
-    results_pairwise_filtered = ch_results_pairwise_filtered
-    results_genewise          = ch_results_genewise
-    results_genewise_filtered = ch_results_genewise_filtered
-    adjacency                 = ch_adjacency
+    results_pairwise          = ch_results_pairwise           // channel: [ tsv ]
+    results_pairwise_filtered = ch_results_pairwise_filtered  // channel: [ tsv ]
+    results_genewise          = ch_results_genewise           // channel: [ tsv ]
+    results_genewise_filtered = ch_results_genewise_filtered  // channel: [ tsv ]
+    adjacency                 = ch_adjacency                  // channel: [ tsv ]
+    versions                  = ch_versions                   // channel: [ versions.yml ]
 }

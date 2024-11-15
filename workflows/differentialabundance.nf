@@ -388,7 +388,9 @@ workflow DIFFERENTIALABUNDANCE {
             ch_contrasts,
             VALIDATOR.out.sample_meta,
             CUSTOM_MATRIXFILTER.out.filtered,
-            ch_tools
+            ch_tools,
+            ch_transcript_lengths,
+            ch_control_features
         )
 
         // TODO for the moment, these channels are allocated to not breaking the next part.
