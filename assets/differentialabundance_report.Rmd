@@ -408,7 +408,7 @@ results <- lapply(differential_files, function(diff_file) {
         if (length_diff != length_features) {
             warnings <- c(warnings,
                 paste0(
-                    '<p style="color:#DAA520;"><strong>WARNING:</strong> Some rows from the differential expressed table (', basename(diff_file), ') were lost after merging with features table (', basename(params$features), ').\n',
+                    '<p style="color:#DAA520;"><strong>WARNING:</strong> Some rows from the differential expressed table (', basename(diff_file), ') were absent from the features table (', basename(params$features), ') and lost on merge.\n',
                     'Rows in diff table: ', length_diff, '.\n',
                     'Rows in merged table: ', length_features, '.</p>\n'
                 )
