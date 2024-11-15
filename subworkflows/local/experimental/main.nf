@@ -33,6 +33,8 @@ workflow EXPERIMENTAL {
     ch_samplesheet  // [ meta, samplesheet ]
     ch_counts       // [ meta, counts]
     ch_tools        // [ pathway_name, differential_map, correlation_map, enrichment_map ]
+    ch_transcript_lengths
+    ch_control_features
 
     main:
 
@@ -54,8 +56,8 @@ workflow EXPERIMENTAL {
     ch_results_genewise = Channel.empty()               // differential results for genewise analysis - it should be a table
     ch_results_genewise_filtered = Channel.empty()      // differential results for genewise analysis - filtered - it should be a table
     ch_adjacency = Channel.empty()                      // adjacency matrix showing the connections between the genes, with values 1|0
-    ch_matrix = Channel.empty()                         // correlation matrix
-    ch_enriched = Channel.empty()                       // output table from enrichment analysis
+    ch_matrix    = Channel.empty()                      // correlation matrix
+    ch_enriched  = Channel.empty()                      // output table from enrichment analysis
 
     // ----------------------------------------------------
     // DIFFERENTIAL ANALYSIS BLOCK
@@ -66,7 +68,9 @@ workflow EXPERIMENTAL {
     DIFFERENTIAL(
         ch_counts_diff,
         ch_samplesheet,
-        ch_contrasts
+        ch_contrasts,
+        ch_transcript_lengths,
+        ch_control_features
     )
     ch_results_pairwise          = postprocess_subworkflow_output(DIFFERENTIAL.out.results_pairwise,["method", "args_diff"]).mix(ch_results_pairwise)
     ch_results_pairwise_filtered = postprocess_subworkflow_output(DIFFERENTIAL.out.results_pairwise_filtered,["method", "args_diff"]).mix(ch_results_pairwise_filtered)
@@ -113,4 +117,7 @@ workflow EXPERIMENTAL {
     // ----------------------------------------------------
 
     // TODO: call visualization stuff here
+
+    emit:
+    versions = ch_versions
 }
