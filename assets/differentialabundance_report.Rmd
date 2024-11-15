@@ -401,19 +401,47 @@ results <- lapply(differential_files, function(diff_file) {
         diff_features <- merge(features, diff, by.x = params$features_id_col, by.y = params$differential_feature_id_column)
 
         # Get number of rows before and after merging
-        length_diff <- as.numeric(nrow(diff))
-        length_features <- as.numeric(nrow(diff_features))
+        rows_diff <- as.numeric(nrow(diff))
+        rows_diff_features <- as.numeric(nrow(diff_features))
 
-        # Compare numbers and report
-        if (length_diff != length_features) {
+        # Check that all IDs were conserved
+        conserved_ids <- all( diff[[params$differential_feature_id_column]] %in% diff_features[[params$features_id_col]] )
+
+        ## Check if all IDs are present
+        if (!conserved_ids) {
+            missing_ids <- setdiff(diff[[params$differential_feature_id_column]], diff_features[[params$features_id_col]])
             warnings <- c(warnings,
                 paste0(
-                    '<p style="color:#DAA520;"><strong>WARNING:</strong> Some rows from the differential expressed table (', basename(diff_file), ') were absent from the features table (', basename(params$features), ') and lost on merge.\n',
-                    'Rows in diff table: ', length_diff, '.\n',
-                    'Rows in merged table: ', length_features, '.</p>\n'
+                    '<p style="color:#DAA520;"><strong>WARNING:</strong>', length(missing_ids),' IDs from the differential expressed table (', basename(diff_file), ') were absent from the features table (', basename(params$features), ') and lost on merge.\n',
+                    'Missing IDs in diff table: ', paste(missing_ids, collapse = ' '), '.\n',
+                    'Rows in merged table: ', rows_diff_features, '.</p>\n'
                 )
             )
         }
+
+        # Compare numbers and report
+        ## Check if features_diff has fewer rows, it would indicate lost of info
+        if ( rows_diff_features < rows_diff ) {
+            warnings <- c(warnings,
+                paste0(
+                    '<p style="color:#DAA520;"><strong>WARNING:</strong> Some rows from the differential expressed table (', basename(diff_file), ') were absent from the features table (', basename(params$features), ') and lost on merge.\n',
+                    'Rows in diff table: ', rows_diff, '.\n',
+                    'Rows in merged table: ', rows_diff_features, '.</p>\n'
+                )
+            )
+        }
+
+        ## Check if features_diff has more rows, it could indicate duplications
+        if ( rows_diff_features > rows_diff ) {
+            warnings <- c(warnings,
+                paste0(
+                    '<p style="color:#DAA520;"><strong>WARNING:</strong> Some rows from the differential expressed table (', basename(diff_file), ') were duplicated on feature table (', basename(params$features), ').\n',
+                    'Rows in diff table: ', rows_diff, '.\n',
+                    'Rows in merged table: ', rows_diff_features, '.</p>\n'
+                )
+            )
+        }
+
     } else {
         diff_features <- diff
     }
