@@ -69,15 +69,11 @@ workflow DIFFERENTIAL {
         .combine(ch_samplesheet)
         .filter{ meta_counts, counts, meta_samplesheet, samplesheet -> meta_counts.subMap(meta_samplesheet.keySet()) == meta_samplesheet }
         .combine(ch_contrasts)
-        .combine(ch_transcript_lengths)
-        .combine(ch_control_features)
         .multiMap {
-            meta_data, counts, meta_samplesheet, samplesheet, meta_contrast, contrast_variable, reference, target, meta_lengths, lengths, meta_control, control ->
-                def meta = meta_data.clone() + meta_contrast.clone() + meta_lengths.clone() + meta_control.clone()
+            meta_data, counts, meta_samplesheet, samplesheet, meta_contrast, contrast_variable, reference, target ->
+                def meta = meta_data.clone() + meta_contrast.clone()
                 contrast: [ meta, contrast_variable, reference, target ]
                 samples_and_matrix: [ meta, samplesheet, counts ]
-                control_features:   [ meta, control ]
-                transcript_lengths: [ meta, lengths ]
         }
         .set { ch_deseq2 }
 
@@ -85,15 +81,15 @@ workflow DIFFERENTIAL {
     DESEQ2_NORM (
             ch_deseq2.contrast.first(),
             ch_deseq2.samples_and_matrix,
-            ch_deseq2.control_features,
-            ch_deseq2.transcript_lengths
+            ch_control_features,
+            ch_transcript_lengths
         )
 
     DESEQ2_DIFFERENTIAL (
             ch_deseq2.contrast,
             ch_deseq2.samples_and_matrix,
-            ch_deseq2.control_features,
-            ch_deseq2.transcript_lengths
+            ch_control_features,
+            ch_transcript_lengths
         )
 
     ch_norm_deseq2         = DESEQ2_NORM.out.normalised_counts
