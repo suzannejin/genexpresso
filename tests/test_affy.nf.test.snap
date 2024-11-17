@@ -2,6 +2,36 @@
     "Test affy profile": {
         "content": [
             16,
+            {
+                "AFFY_JUSTRMA_RAW": {
+                    "r-base": "4.3.1",
+                    "bioconductor-affy": "1.78.0"
+                },
+                "GSEA_GSEA": {
+                    "gsea": "4.3.2"
+                },
+                "LIMMA_DIFFERENTIAL": {
+                    "r-base": "4.3.3",
+                    "bioconductor-limma": "3.58.1"
+                },
+                "PLOT_DIFFERENTIAL": {
+                    "r-base": "4.3.3",
+                    "r-shinyngs": "2.0.0"
+                },
+                "PLOT_EXPLORATORY": {
+                    "r-shinyngs": "2.0.0"
+                },
+                "TABULAR_TO_GSEA_CHIP": {
+                    "bash": "4.2.25 3"
+                },
+                "VALIDATOR": {
+                    "r-base": "4.3.3",
+                    "r-shinyngs": "2.0.0"
+                },
+                "Workflow": {
+                    "nf-core/differentialabundance": "v1.6.0dev"
+                }
+            },
             [
                 "other",
                 "other/affy",
@@ -210,6 +240,6 @@
             "nf-test": "0.9.0",
             "nextflow": "24.10.0"
         },
-        "timestamp": "2024-11-08T15:05:24.153458864"
+        "timestamp": "2024-11-17T21:29:47.480048632"
     }
 }

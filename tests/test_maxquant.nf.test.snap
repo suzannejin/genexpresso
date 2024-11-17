@@ -2,6 +2,32 @@
     "Test maxquant profile": {
         "content": [
             20,
+            {
+                "LIMMA_DIFFERENTIAL": {
+                    "r-base": "4.3.3",
+                    "bioconductor-limma": "3.58.1"
+                },
+                "PLOT_DIFFERENTIAL": {
+                    "r-base": "4.3.3",
+                    "r-shinyngs": "2.0.0"
+                },
+                "PLOT_EXPLORATORY": {
+                    "r-shinyngs": "2.0.0"
+                },
+                "PROTEUS": {
+                    "r-base": "4.2.1",
+                    "r-proteus-bartongroup": "0.2.16",
+                    "r-plotly": "4.10.2",
+                    "bioconductor-limma": "3.54.0"
+                },
+                "VALIDATOR": {
+                    "r-base": "4.3.3",
+                    "r-shinyngs": "2.0.0"
+                },
+                "Workflow": {
+                    "nf-core/differentialabundance": "v1.6.0dev"
+                }
+            },
             [
                 "other",
                 "other/limma",
@@ -147,6 +173,6 @@
             "nf-test": "0.9.0",
             "nextflow": "24.10.0"
         },
-        "timestamp": "2024-11-07T16:57:00.079425408"
+        "timestamp": "2024-11-17T21:32:05.655955914"
     }
 }

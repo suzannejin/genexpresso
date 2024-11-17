@@ -2,6 +2,38 @@
     "Test profile": {
         "content": [
             21,
+            {
+                "DESEQ2_DIFFERENTIAL": {
+                    "r-base": "4.1.3",
+                    "bioconductor-deseq2": "1.34.0"
+                },
+                "GSEA_GSEA": {
+                    "gsea": "4.3.2"
+                },
+                "GTF_TO_TABLE": {
+                    "atlas-gene-annotation-manipulation": "1.1.1"
+                },
+                "GUNZIP_GTF": {
+                    "gunzip": 1.1
+                },
+                "PLOT_DIFFERENTIAL": {
+                    "r-base": "4.3.3",
+                    "r-shinyngs": "2.0.0"
+                },
+                "PLOT_EXPLORATORY": {
+                    "r-shinyngs": "2.0.0"
+                },
+                "TABULAR_TO_GSEA_CHIP": {
+                    "bash": "4.2.25 3"
+                },
+                "VALIDATOR": {
+                    "r-base": "4.3.3",
+                    "r-shinyngs": "2.0.0"
+                },
+                "Workflow": {
+                    "nf-core/differentialabundance": "v1.6.0dev"
+                }
+            },
             [
                 "other",
                 "other/deseq2",
@@ -154,6 +186,6 @@
             "nf-test": "0.9.0",
             "nextflow": "24.10.0"
         },
-        "timestamp": "2024-11-08T14:00:03.015341477"
+        "timestamp": "2024-11-17T21:24:54.504828126"
     }
 }
