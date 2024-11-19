@@ -896,24 +896,27 @@ for (i in 1:nrow(contrasts)){
             contrast_de <- round_dataframe_columns(contrast_de, digits=params$report_round_digits)
             print( htmltools::tagList(datatable(contrast_de, caption = paste('Differential genes', dir, 'in', contrast_descriptions[i], " (check", differential_files[[i]], "for more detail)"), rownames = FALSE) ))
 
-        # Plot Differentially Expressed Genes by Gene Biotype
-        gene_biotype_table <- contrast_de %>%
-            group_by(`Gene biotype`) %>%
-            summarise(count = dplyr::n(), .groups = 'drop') %>%
-            filter(count > 0) %>%
-            arrange(desc(count))
+        if ("Gene biotype" %in% colnames(contrast_de)) {
+            # Plot Differentially Expressed Genes by Gene Biotype
+            gene_biotype_table <- contrast_de %>%
+                group_by(`Gene biotype`) %>%
+                summarise(count = dplyr::n(), .groups = 'drop') %>%
+                filter(count > 0) %>%
+                arrange(desc(count))
 
-        gene_biotype_plot <- ggplot(gene_biotype_table, aes(x = reorder(`Gene biotype`, -count), y = count)) +
-            geom_bar(stat = "identity", position = position_dodge()) +
-            labs(
-                title = paste0("Differentially Expressed Genes by Gene Biotype (", dir, ")"),
-                x = "Gene Biotype",
-                y = "Number of Differentially Expressed Genes"  ) +
-            theme_minimal() +
-            theme(axis.text.x = element_text(angle = 45, hjust = 1))
+            gene_biotype_plot <- ggplot(gene_biotype_table, aes(x = reorder(`Gene biotype`, -count), y = count)) +
+                geom_bar(stat = "identity", position = position_dodge()) +
+                labs(
+                    title = paste0("Differentially Expressed Genes by Gene Biotype (", dir, ")"),
+                    x = "Gene Biotype",
+                    y = "Number of Differentially Expressed Genes"  ) +
+                theme_minimal() +
+                theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-        print(gene_biotype_plot)
-
+            print(gene_biotype_plot)
+        } else {
+            cat("Column 'Gene biotype' does not exist. Skipping plot.\n")
+        }
         }else{
             cat(paste0("No significantly differential '", dir, "' genes.\n\n"))
         }

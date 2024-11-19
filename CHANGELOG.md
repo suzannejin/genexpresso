@@ -7,12 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- [[#358](https://github.com/nf-core/differentialabundance/pull/358)] - Added software version check in nf-tests and gene biotype column check in `.Rmd` ([@atrigila](https://github.com/atrigila), review by [@pinin4fjords](https://github.com/pinin4fjords))
 - [[#345](https://github.com/nf-core/differentialabundance/pull/345)] - Plot differentially expressed genes by gene biotype ([@atrigila](https://github.com/atrigila), review by [@grst](https://github.com/grst))
 - [[#343](https://github.com/nf-core/differentialabundance/pull/343)] - Add pipeline-level nf-tests ([@atrigila](https://github.com/atrigila), review by [@pinin4fjords](https://github.com/pinin4fjords) and [@nschcolnicov](https://github.com/nschcolnicov))
 - [[#286](https://github.com/nf-core/differentialabundance/pull/286)] - Integration of limma voom for rnaseq data ([@KamilMaliszArdigen](https://github.com/KamilMaliszArdigen), review by [@pinin4fjords](https://github.com/pinin4fjords))
 
 ### Fixed
 
+- [[#358](https://github.com/nf-core/differentialabundance/pull/358)] - Fixed nf-tests not running due to `--changed-since HEAD^`([@atrigila](https://github.com/atrigila), review by [@pinin4fjords](https://github.com/pinin4fjords))
 - [[#344](https://github.com/nf-core/differentialabundance/pull/344)] - Fixed replacement of NA sub-strings
   ([@atrigila](https://github.com/atrigila), suggested by [@BEFH](https://github.com/BEFH), review by [@apeltzer](https://github.com/apeltzer) and [@nschcolnicov](https://github.com/nschcolnicov))
 - [[#342](https://github.com/nf-core/differentialabundance/pull/342)] - Fixed incorrectly colored dots in report volcano plots for logFC thresholds <1 ([@WackerO](https://github.com/WackerO), review by [@pinin4fjords](https://github.com/pinin4fjords))
