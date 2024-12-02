@@ -150,9 +150,9 @@ workflow DIFFERENTIALABUNDANCE {
                     .map {
                         it ->
                             def pathway_name     = it[0].subMap(["pathway_name"])
-                            def differential_map = it[0].subMap(["diff_method","args_diff"])
-                            def correlation_map  = it[0].subMap(["cor_method","args_cor"])
-                            def enrichment_map   = it[0].subMap(["enr_method","args_enr"])
+                            def differential_map = it[0].subMap(["diff_method","diff_args"])
+                            def correlation_map  = it[0].subMap(["cor_method","cor_args"])
+                            def enrichment_map   = it[0].subMap(["enr_method","enr_args"])
                             [ pathway_name, differential_map, correlation_map, enrichment_map ]
                     }.unique()
 

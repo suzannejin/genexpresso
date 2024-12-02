@@ -16,9 +16,9 @@
                 "meta": ["diff_method"],
                 "enum": ["propd", "deseq2", "limma", "none"]
             },
-            "args_diff": {
+            "diff_args": {
                 "type": "string",
-                "meta": ["args_diff"]
+                "meta": ["diff_args"]
             },
             "cor_method": {
                 "type": "string",
@@ -26,18 +26,18 @@
                 "errorMessage": "choose a correlation method (eg. propr) or none",
                 "enum": ["propr", "none"]
             },
-            "args_cor": {
+            "cor_args": {
                 "type": "string",
-                "meta": ["args_cor"]
+                "meta": ["cor_args"]
             },
             "enr_method": {
                 "type": "string",
                 "meta": ["enr_method"],
                 "errorMessage": "choose a functional enrichment analysis method (eg. gsea, grea, gprofiler, etc) or none"
             },
-            "args_enr": {
+            "enr_args": {
                 "type": "string",
-                "meta": ["args_enr"]
+                "meta": ["enr_args"]
             }
         },
         "required": []
