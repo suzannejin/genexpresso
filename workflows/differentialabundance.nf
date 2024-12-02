@@ -145,12 +145,14 @@ workflow DIFFERENTIALABUNDANCE {
     // ----------------------------------------
 
     // combine the abundance matrix with the tools channel, to dictate which methods to run
-    // ch_input_to_differential = ch_abundance
-    //     .combine(ch_tools)
-    //     .map { meta_abundance, abundance, pathway_name, differential_map, correlation_map, enrichment_map ->
-    //         def meta = meta_abundance.clone() + ['pathway_name' : pathway_name['pathway_name']] + differential_map.clone()
-    //         [ meta, abundance, differential_map['diff_method'] ]  // TODO also add the explicit parameters, like FC_threshold, pvalue_threshold, etc. into this tuple
-    //     }
+    ch_input_to_differential = ch_abundance
+        .combine(ch_tools)
+        .map { meta_abundance, abundance, pathway_name, differential_map, correlation_map, enrichment_map ->
+            def meta = meta_abundance.clone() + ['pathway_name' : pathway_name['pathway_name']] + differential_map.clone()
+            def fc_threshold = differential_map['differential_min_fold_change'] ? differential_map['differential_min_fold_change'] : params.differential_min_fold_change
+            def pvalue_threshold = differential_map['differential_max_qval'] ? differential_map['differential_max_qval'] : params.differential_max_qval
+            [ meta, abundance, differential_map['diff_method'], fc_threshold, pvalue_threshold ]
+        }
 
     // // run the differential subworkflow
     // DIFFERENTIAL(
