@@ -7,38 +7,8 @@
 def checkPathParamList = [ params.input ]
 for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
 
-// Check mandatory parameters
 def exp_meta = [ "id": params.study_name  ]
-if (params.input) { ch_samplesheet = Channel.of([ exp_meta, file(params.input, checkIfExists: true) ]) } else { exit 1, 'Input samplesheet not specified!' }
-
-// abundance matrix channel
-abundance_file = file(params.matrix, checkIfExists: true)
-ch_abundance = Channel.of([ exp_meta, abundance_file])
-
-// features channel
-matrix_as_anno_filename = "${workflow.workDir}/${abundance_file.getBaseName()}_as_anno.${abundance_file.getExtension()}"
-ch_features = ch_abundance
-    .map{ meta, matrix ->
-        matrix_copy = file(matrix_as_anno_filename)
-        matrix_copy.exists() && matrix.getText().md5().equals(matrix_copy.getText().md5()) ?: matrix.copyTo(matrix_as_anno_filename)
-        [ meta, file(matrix_as_anno_filename) ]
-    }
-
-// contrasts file channel
-ch_contrasts = Channel.from([[exp_meta, file(params.contrasts)]])
-
-// transcript lengths and control features - for normalization - if provided
-if (params.transcript_length_matrix) { ch_transcript_lengths = Channel.of([ exp_meta, file(params.transcript_length_matrix, checkIfExists: true)]).first() } else { ch_transcript_lengths = [[],[]] }
-if (params.control_features) { ch_control_features = Channel.of([ exp_meta, file(params.control_features, checkIfExists: true)]).first() } else { ch_control_features = [[],[]] }
-
-// gene sets
-ch_gene_sets = Channel.of([exp_meta, file(params.gene_sets_files, checkIfExists: true)])
-
-//other files
-report_file = file(params.report_file, checkIfExists: true)
-logo_file = file(params.logo_file, checkIfExists: true)
-css_file = file(params.css_file, checkIfExists: true)
-citations_file = file(params.citations_file, checkIfExists: true)
+if (params.input) { ch_input = Channel.of([ exp_meta, file(params.input, checkIfExists: true) ]) } else { exit 1, 'Input not specified!' }
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -49,17 +19,14 @@ citations_file = file(params.citations_file, checkIfExists: true)
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    IMPORT FUNCTIONS
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
-
-include { samplesheetToList } from 'plugin/nf-schema'
-
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     IMPORT LOCAL MODULES/SUBWORKFLOWS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
+
+include { VALIDATE_RNASEQ                                   } from '../subworkflows/local/validate_rnaseq/main'
+include { VALIDATE_AFFY_ARRAY                               } from '../subworkflows/local/validate_affy_array/main'
+include { VALIDATE_GEO_SOFT_FILE                            } from '../subworkflows/local/validate_geo_soft_file/main'
+include { VALIDATE_MAXQUANT                                 } from '../subworkflows/local/validate_maxquant/main'
 
 
 /*
@@ -68,13 +35,11 @@ include { samplesheetToList } from 'plugin/nf-schema'
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-//
-// MODULE: Installed directly from nf-core/modules
-//
+include { ABUNDANCE_DIFFERENTIAL_FILTER as DIFFERENTIAL     } from '../subworkflows/nf-core/abundance_differential_filter/main'
+
 include { SHINYNGS_VALIDATEFOMCOMPONENTS as VALIDATOR       } from '../modules/nf-core/shinyngs/validatefomcomponents/main'
 include { CUSTOM_MATRIXFILTER                               } from '../modules/nf-core/custom/matrixfilter/main'
 
-include { ABUNDANCE_DIFFERENTIAL_FILTER as DIFFERENTIAL     } from '../subworkflows/nf-core/abundance_differential_filter/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -92,6 +57,72 @@ workflow DIFFERENTIALABUNDANCE {
     ch_versions = Channel.empty()
 
     // ----------------------------------------
+    // PARSE INPUTS
+    // ----------------------------------------
+
+    // Parse the matrix and features
+
+    if (params.study_type == "rnaseq") {
+        VALIDATE_RNASEQ(ch_input)
+        ch_matrix = VALIDATE_RNASEQ.out.matrix
+        ch_features = VALIDATE_RNASEQ.out.features
+        ch_versions = ch_versions.mix(VALIDATE_RNASEQ.out.versions)
+
+    } else if (params.study_type == 'affy_array') {
+        VALIDATE_AFFY_ARRAY(ch_input)
+        ch_matrix = VALIDATE_AFFY_ARRAY.out.matrix
+        ch_features = VALIDATE_AFFY_ARRAY.out.features
+        ch_versions = ch_versions.mix(VALIDATE_AFFY_ARRAY.out.versions)
+
+    } else if (params.study_type == 'geo_soft_file') {
+        VALIDATE_GEO_SOFT_FILE(ch_input)
+        ch_matrix = VALIDATE_GEO_SOFT_FILE.out.matrix
+        ch_features = VALIDATE_GEO_SOFT_FILE.out.features
+        ch_versions = ch_versions.mix(VALIDATE_GEO_SOFT_FILE.out.versions)
+
+    } else if (params.study_type == 'maxquant') {
+        VALIDATE_MAXQUANT(ch_input)
+        ch_matrix = VALIDATE_MAXQUANT.out.matrix
+        ch_features = VALIDATE_MAXQUANT.out.features
+        ch_versions = ch_versions.mix(VALIDATE_MAXQUANT.out.versions)
+
+    } else {
+        error("Study type not recognized")
+    }
+
+    // Parse contrast file
+
+    ch_contrasts = Channel.from([[exp_meta, file(params.contrasts)]])
+
+    // Parse transcript lenght and control features - optional - for normalization
+
+    if (params.transcript_length_matrix) { 
+        ch_transcript_lengths = Channel.of([ exp_meta, file(params.transcript_length_matrix, checkIfExists: true)]).first() 
+    } else { 
+        ch_transcript_lengths = [[],[]] 
+    }
+
+    if (params.control_features) {
+        ch_control_features = Channel.of([ exp_meta, file(params.control_features, checkIfExists: true)]).first() 
+    } else { 
+        ch_control_features = [[],[]] 
+    }
+
+    // Parse gene sets files - optional - for enrichment analysis
+
+    if (params.gene_sets_files) {
+        gene_sets_files = params.gene_sets_files.split(",")
+        ch_gene_sets = Channel.of(gene_sets_files).map { file(it, checkIfExists: true) }
+    }
+
+    // Parse other files
+
+    report_file = file(params.report_file, checkIfExists: true)
+    logo_file = file(params.logo_file, checkIfExists: true)
+    css_file = file(params.css_file, checkIfExists: true)
+    citations_file = file(params.citations_file, checkIfExists: true)
+
+    // ----------------------------------------
     // VALIDATE INPUT FORMATS
     // ----------------------------------------
 
@@ -105,13 +136,13 @@ workflow DIFFERENTIALABUNDANCE {
     */
 
     VALIDATOR(
-        ch_samplesheet.join(ch_abundance),
+        ch_input.join(ch_matrix),
         ch_features,
         ch_contrasts
     )
 
-    ch_abundance = VALIDATOR.out.assays
-    ch_samplesheet = VALIDATOR.out.sample_meta
+    ch_matrix = VALIDATOR.out.assays
+    ch_input = VALIDATOR.out.sample_meta
 
     // Split the contrasts up so we can run differential analyses and
     // downstream plots separately.
@@ -135,29 +166,31 @@ workflow DIFFERENTIALABUNDANCE {
     /* Filter out the lowly expressed features and samples from the matrix */
 
     CUSTOM_MATRIXFILTER(
-        ch_abundance,
-        ch_samplesheet
+        ch_matrix,
+        ch_input
     )
-    ch_abundance = CUSTOM_MATRIXFILTER.out.filtered
+    ch_matrix = CUSTOM_MATRIXFILTER.out.filtered
 
     // ----------------------------------------
     // RUN DIFFERENTIAL ANALYSIS
     // ----------------------------------------
 
     // combine the abundance matrix with the tools channel, to dictate which methods to run
-    ch_input_to_differential = ch_abundance
+    ch_input_to_differential = ch_matrix
         .combine(ch_tools)
-        .map { meta_abundance, abundance, pathway_name, differential_map, correlation_map, enrichment_map ->
-            def meta = meta_abundance.clone() + ['pathway_name' : pathway_name['pathway_name']] + differential_map.clone()
+        .map { meta_matrix, matrix, pathway_name, differential_map, correlation_map, enrichment_map ->
+            def meta = meta_matrix.clone() + ['pathway_name' : pathway_name['pathway_name']] + differential_map.clone()
             def fc_threshold = differential_map['differential_min_fold_change'] ? differential_map['differential_min_fold_change'] : params.differential_min_fold_change
             def pvalue_threshold = differential_map['differential_max_qval'] ? differential_map['differential_max_qval'] : params.differential_max_qval
-            [ meta, abundance, differential_map['diff_method'], fc_threshold, pvalue_threshold ]
+            [ meta, matrix, differential_map['diff_method'], fc_threshold, pvalue_threshold ]
         }
+
+    ch_input_to_differential.view()
 
     // // run the differential subworkflow
     // DIFFERENTIAL(
     //     ch_input_to_differential,
-    //     ch_samplesheet,
+    //     ch_input,
     //     ch_transcript_lengths,
     //     ch_control_features,
     //     ch_contrasts
