@@ -61,8 +61,8 @@ if (params.control_features) { ch_control_features = Channel.of([ exp_meta, file
 
 def run_gene_set_analysis = params.gsea_run || params.gprofiler2_run
 
+ch_gene_sets = Channel.of([])    // For methods that can run without gene sets
 if (run_gene_set_analysis) {
-    ch_gene_sets = Channel.of([])    // For methods that can run without gene sets
     if (params.gene_sets_files) {
         gene_sets_files = params.gene_sets_files.split(",")
         ch_gene_sets = Channel.of(gene_sets_files).map { file(it, checkIfExists: true) }
@@ -387,6 +387,8 @@ workflow DIFFERENTIALABUNDANCE {
         EXPERIMENTAL(
             ch_contrasts,
             VALIDATOR.out.sample_meta,
+            VALIDATOR.out.feature_meta,
+            ch_gene_sets,
             CUSTOM_MATRIXFILTER.out.filtered,
             ch_tools,
             ch_transcript_lengths,
