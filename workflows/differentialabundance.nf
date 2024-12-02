@@ -27,6 +27,10 @@ ch_features = ch_abundance
 // contrasts file channel
 ch_contrasts = Channel.from([[exp_meta, file(params.contrasts)]])
 
+// transcript lengths and control features - for normalization - if provided
+if (params.transcript_length_matrix) { ch_transcript_lengths = Channel.of([ exp_meta, file(params.transcript_length_matrix, checkIfExists: true)]).first() } else { ch_transcript_lengths = [[],[]] }
+if (params.control_features) { ch_control_features = Channel.of([ exp_meta, file(params.control_features, checkIfExists: true)]).first() } else { ch_control_features = [[],[]] }
+
 // gene sets
 ch_gene_sets = Channel.of([exp_meta, file(params.gene_sets_files, checkIfExists: true)])
 
@@ -79,6 +83,9 @@ include { ABUNDANCE_DIFFERENTIAL_FILTER as DIFFERENTIAL     } from '../subworkfl
 */
 
 workflow DIFFERENTIALABUNDANCE {
+
+    take:
+    ch_tools
 
     main:
 
@@ -134,57 +141,25 @@ workflow DIFFERENTIALABUNDANCE {
     ch_abundance = CUSTOM_MATRIXFILTER.out.filtered
 
     // ----------------------------------------
-    // PREPARE TOOLS CHANNEL
+    // RUN DIFFERENTIAL ANALYSIS
     // ----------------------------------------
 
-    /* Convert the toolsheet.csv in a channel with the proper format
-
-        This tools channel is used to define which methods will be performed in each analysis step.
-        And how to combine the different outputs from different methods at different steps.
-        The nf-schema functionalities are used for the parsing.
-    */
-
-    // parse the toolsheet.csv file using nf-schema
-    // and organize the channel into the proper format
-    ch_tools = Channel.fromList(samplesheetToList(params.tools, './assets/schema_tools.json'))
-                    .map {
-                        it ->
-                            def pathway_name     = it[0].subMap(["pathway_name"])
-                            def differential_map = it[0].subMap(["diff_method","diff_args"])
-                            def correlation_map  = it[0].subMap(["cor_method","cor_args"])
-                            def enrichment_map   = it[0].subMap(["enr_method","enr_args"])
-                            [ pathway_name, differential_map, correlation_map, enrichment_map ]
-                    }.unique()
-
-    // Filter the tools to the pathway(s) of interest (as indicated by --pathway flag),
-    // or run everything if requested (if --pathway all)
-    if (params.pathway != "all") {
-        ch_tools
-            .filter{
-                it[0]["pathway_name"] in params.pathway.tokenize(',')
-            }
-            .set{ ch_tools }
-    }
-
-    // remove the pathway_name information if there is only one pathway required
-    // This is done to enable resuming, for example, deseq2 analysis in the following scenario:
-    //    - run 1: deseq2 + gprofiler2
-    //    - run 2: deseq2 + gsea
-    // Providing the same meta (with pathway_name ==  null) will enable resume work properly
-    ch_tools.count()
-        .combine(ch_tools)
-            .map { n, pathway_name, differential_map, correlation_map, enrichment_map ->
-                def new_pathway_name = n == 1 ? ['pathway_name': null] : ['pathway_name': pathway_name['pathway_name']]
-                [ new_pathway_name, differential_map, correlation_map, enrichment_map ]
-            }
-            .set{ ch_tools }
-
-    // ----------------------------------------
-    // RUN DIFFERENTIAL ABUNDANCE ANALYSIS
-    // ----------------------------------------
-
+    // combine the abundance matrix with the tools channel, to dictate which methods to run
     // ch_input_to_differential = ch_abundance
-    //     .combine()
+    //     .combine(ch_tools)
+    //     .map { meta_abundance, abundance, pathway_name, differential_map, correlation_map, enrichment_map ->
+    //         def meta = meta_abundance.clone() + ['pathway_name' : pathway_name['pathway_name']] + differential_map.clone()
+    //         [ meta, abundance, differential_map['diff_method'] ]  // TODO also add the explicit parameters, like FC_threshold, pvalue_threshold, etc. into this tuple
+    //     }
+
+    // // run the differential subworkflow
+    // DIFFERENTIAL(
+    //     ch_input_to_differential,
+    //     ch_samplesheet,
+    //     ch_transcript_lengths,
+    //     ch_control_features,
+    //     ch_contrasts
+    // )
 
 }   
 

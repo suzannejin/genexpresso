@@ -38,13 +38,16 @@ params.gtf = getGenomeAttribute('gtf')
 // WORKFLOW: Run main analysis pipeline depending on type of input
 //
 workflow NFCORE_DIFFERENTIALABUNDANCE {
+    
+    take:
+    ch_tools
 
     main:
 
     //
     // WORKFLOW: Run pipeline
     //
-    DIFFERENTIALABUNDANCE ()
+    DIFFERENTIALABUNDANCE (ch_tools)
 }
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -72,7 +75,9 @@ workflow {
     // WORKFLOW: Run main workflow
     //
 
-    NFCORE_DIFFERENTIALABUNDANCE ()
+    NFCORE_DIFFERENTIALABUNDANCE (
+        PIPELINE_INITIALISATION.out.tools
+    )
 
     //
     // SUBWORKFLOW: Run completion tasks

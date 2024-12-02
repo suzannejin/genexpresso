@@ -68,8 +68,13 @@ workflow PIPELINE_INITIALISATION {
     //
     validateInputParameters()
 
+    //
+    // Parse tools sheet
+    //
+    ch_tools = parseTools()
 
     emit:
+    tools       = ch_tools
     versions    = ch_versions
 }
 
@@ -234,3 +239,66 @@ def methodsDescriptionText(mqc_methods_yaml) {
     return description_html.toString()
 }
 
+//
+// Parse flags into a map
+//
+def flagsToMap(String flags) {
+    def map = [:]
+    def parts = flags.split('--').findAll { it.trim() }
+    parts.each { part ->
+        def (key, value) = part.trim().split(/\s+/, 2)
+        map[key] = value
+    }
+    return map
+}
+
+//
+// This parses the toolsheet and returns a channel of maps
+//
+def parseTools() {
+
+    // parse toolsheet using nf-schema
+    ch_tools = Channel.fromList(samplesheetToList(params.tools, './assets/schema_tools.json'))
+
+    // filter channel
+    if (params.pathway != "all") {
+        ch_tools = ch_tools
+            .filter{
+                it[0]["pathway_name"] in params.pathway.tokenize(',')
+            }
+    }
+
+    // organize channel structure
+    ch_tools = ch_tools
+        .map { it -> it[0] }
+        .map { it ->
+            // parse method
+            def diff_method = it["diff_method"] == [] ? ["diff_method": null] : it.subMap("diff_method")
+            def cor_method  = it["cor_method"]  == [] ? ["cor_method" : null] : it.subMap("cor_method")
+            def enr_method  = it["enr_method"]  == [] ? ["enr_method" : null] : it.subMap("enr_method")
+            // parse method arguments
+            def diff_args = it["diff_args"] == [] ? [] : flagsToMap(it["diff_args"])
+            def enr_args  = it["enr_args"]  == [] ? [] : flagsToMap(it["enr_args"])
+            def cor_args  = it["cor_args"]  == [] ? [] : flagsToMap(it["cor_args"])
+            // map
+            [ it.subMap("pathway_name"),
+                diff_method + diff_args,
+                cor_method  + cor_args,
+                enr_method  + enr_args ]
+        }.unique()
+
+    // replace pathway name by null, when only one pathway is selected
+    // This is because -resume will not work properly for the following scenario otherwise:
+    //    - run 1 : deseq2 + gprofiler2
+    //    - run 2 : deseq2 + gsea
+    // If different pathway_name is provided, then deseq2 run twice
+    ch_tools = ch_tools
+        .count()
+        .combine(ch_tools)
+        .map { n, pathway_name, differential_map, correlation_map, enrichment_map ->
+            def new_pathway_name = n == 1 ? ['pathway_name': null] : ['pathway_name': pathway_name['pathway_name']]
+            [ new_pathway_name, differential_map, correlation_map, enrichment_map ]
+        }
+
+    return ch_tools
+}
