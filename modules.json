@@ -15,6 +15,11 @@
                         "git_sha": "04bc484c987b523ea5420ed6bbc1fdc6d8aef751",
                         "installed_by": ["modules"]
                     },
+                    "custom/filterdifferentialtable": {
+                        "branch": "master",
+                        "git_sha": "833a65446ea117d092d4940f098236b6766e7aac",
+                        "installed_by": ["abundance_differential_filter"]
+                    },
                     "custom/matrixfilter": {
                         "branch": "master",
                         "git_sha": "285a50500f9e02578d90b3ce6382ea3c30216acd",
@@ -33,7 +38,7 @@
                     "deseq2/differential": {
                         "branch": "master",
                         "git_sha": "9326d73af3fbe2ee90d9ce0a737461a727c5118e",
-                        "installed_by": ["modules"]
+                        "installed_by": ["abundance_differential_filter", "modules"]
                     },
                     "geoquery/getgeo": {
                         "branch": "master",
@@ -58,7 +63,7 @@
                     "limma/differential": {
                         "branch": "master",
                         "git_sha": "9326d73af3fbe2ee90d9ce0a737461a727c5118e",
-                        "installed_by": ["modules"]
+                        "installed_by": ["abundance_differential_filter", "modules"]
                     },
                     "mygene": {
                         "branch": "master",
@@ -109,6 +114,11 @@
             },
             "subworkflows": {
                 "nf-core": {
+                    "abundance_differential_filter": {
+                        "branch": "master",
+                        "git_sha": "76fc14f27d9696757cbd7636bb57ce60b23583ae",
+                        "installed_by": ["subworkflows"]
+                    },
                     "utils_nextflow_pipeline": {
                         "branch": "master",
                         "git_sha": "3aa0aec1d52d492fe241919f0c6100ebf0074082",
