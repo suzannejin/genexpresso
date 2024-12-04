@@ -32,7 +32,7 @@
                     },
                     "deseq2/differential": {
                         "branch": "master",
-                        "git_sha": "666652151335353eef2fcd58880bcef5bc2928e1",
+                        "git_sha": "9326d73af3fbe2ee90d9ce0a737461a727c5118e",
                         "installed_by": ["modules"]
                     },
                     "geoquery/getgeo": {
