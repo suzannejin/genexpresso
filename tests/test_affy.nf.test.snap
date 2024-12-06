@@ -22,7 +22,7 @@
                     "r-shinyngs": "2.0.0"
                 },
                 "TABULAR_TO_GSEA_CHIP": {
-                    "bash": "4.2.25 3"
+                    "bash": "5.2.21 3"
                 },
                 "VALIDATOR": {
                     "r-base": "4.3.3",
@@ -33,6 +33,8 @@
                 }
             },
             [
+                "custom",
+                "custom/phenotype_uninvolved_lesional_filtered.tsv",
                 "other",
                 "other/affy",
                 "other/affy/raw._eset.rds",
@@ -154,7 +156,6 @@
                 "tables/annotation/hgu133plus2.annotation.tsv",
                 "tables/differential",
                 "tables/differential/phenotype_uninvolved_lesional.limma.results.tsv",
-                "tables/differential/phenotype_uninvolved_lesional.limma.results_filtered.tsv",
                 "tables/processed_abundance",
                 "untar",
                 "untar/GSE50790",
@@ -168,6 +169,7 @@
                 "untar/GSE50790/GSM1229348_Gudjohnsson_008_8470_PN.CEL.gz"
             ],
             [
+                "phenotype_uninvolved_lesional_filtered.tsv:md5,f7f9f8914173ecb4a9af2d35afd62aae",
                 "raw._eset.rds:md5,8c6c7807ce6c5d8204bd681b941eeb0f",
                 "phenotype_uninvolved_lesional.MArrayLM.limma.rds:md5,b5ef9fc63c87a83bf925f9284d83663f",
                 "volcano.png:md5,d4381dd34786c58e25b8e4ed1fa8bf26",
@@ -221,7 +223,6 @@
                 "versions.yml:md5,892774f9d56ba10c8646736b7f777ecc",
                 "hgu133plus2.annotation.tsv:md5,f2b82ef12b2a2e8e575de06766583d96",
                 "phenotype_uninvolved_lesional.limma.results.tsv:md5,686e871be0f1b435e161f84f6518cfc3",
-                "phenotype_uninvolved_lesional.limma.results_filtered.tsv:md5,f7f9f8914173ecb4a9af2d35afd62aae",
                 "GSM1229341_Gudjohnsson_001_6690_PP.CEL.gz:md5,259d0908211a071351450f366fd51cad",
                 "GSM1229342_Gudjohnsson_002_6690_PN.CEL.gz:md5,31cc2b8b26e210760b8ebd4b304b52ba",
                 "GSM1229343_Gudjohnsson_003_7450_PN.CEL.gz:md5,713a3ca75a883cbff6da0be7bd251422",
@@ -236,6 +237,6 @@
             "nf-test": "0.9.0",
             "nextflow": "24.10.2"
         },
-        "timestamp": "2024-12-04T14:40:06.384330301"
+        "timestamp": "2024-12-06T21:17:18.168155431"
     }
 }

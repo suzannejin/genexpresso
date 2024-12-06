@@ -24,7 +24,7 @@
                     "r-shinyngs": "2.0.0"
                 },
                 "TABULAR_TO_GSEA_CHIP": {
-                    "bash": "4.2.25 3"
+                    "bash": "5.2.21 3"
                 },
                 "VALIDATOR": {
                     "r-base": "4.3.3",
@@ -35,6 +35,9 @@
                 }
             },
             [
+                "custom",
+                "custom/treatment_mCherry_hND6__filtered.tsv",
+                "custom/treatment_mCherry_hND6_sample_number_filtered.tsv",
                 "other",
                 "other/limma",
                 "other/limma/treatment_mCherry_hND6_.MArrayLM.limma.rds",
@@ -125,11 +128,11 @@
                 "tables/annotation/Mus_musculus.anno.tsv",
                 "tables/differential",
                 "tables/differential/treatment_mCherry_hND6_.limma.results.tsv",
-                "tables/differential/treatment_mCherry_hND6_.limma.results_filtered.tsv",
-                "tables/differential/treatment_mCherry_hND6_sample_number.limma.results.tsv",
-                "tables/differential/treatment_mCherry_hND6_sample_number.limma.results_filtered.tsv"
+                "tables/differential/treatment_mCherry_hND6_sample_number.limma.results.tsv"
             ],
             [
+                "treatment_mCherry_hND6__filtered.tsv:md5,0bfc9215edc6aad064c3ce6abc81bfce",
+                "treatment_mCherry_hND6_sample_number_filtered.tsv:md5,0bfc9215edc6aad064c3ce6abc81bfce",
                 "treatment_mCherry_hND6_.MArrayLM.limma.rds:md5,5727192a1f8175594f4a148306f23988",
                 "treatment_mCherry_hND6_sample_number.MArrayLM.limma.rds:md5,385f960f9330a1dd6bbf4b00166bc96e",
                 "volcano.png:md5,aa3d307fc1bb3284c5a29a469dc9a75e",
@@ -168,15 +171,13 @@
                 "versions.yml:md5,892774f9d56ba10c8646736b7f777ecc",
                 "Mus_musculus.anno.tsv:md5,c1d7f21e64bd00f845ec6545c123a1fb",
                 "treatment_mCherry_hND6_.limma.results.tsv:md5,26df55a9c0fd182977396f75337d5fc4",
-                "treatment_mCherry_hND6_.limma.results_filtered.tsv:md5,0bfc9215edc6aad064c3ce6abc81bfce",
-                "treatment_mCherry_hND6_sample_number.limma.results.tsv:md5,2a3937bfc95a1d0a0cbed1f2da4b0bd2",
-                "treatment_mCherry_hND6_sample_number.limma.results_filtered.tsv:md5,0bfc9215edc6aad064c3ce6abc81bfce"
+                "treatment_mCherry_hND6_sample_number.limma.results.tsv:md5,2a3937bfc95a1d0a0cbed1f2da4b0bd2"
             ]
         ],
         "meta": {
             "nf-test": "0.9.0",
             "nextflow": "24.10.2"
         },
-        "timestamp": "2024-12-04T14:45:14.298568994"
+        "timestamp": "2024-12-06T21:23:00.169371381"
     }
 }
