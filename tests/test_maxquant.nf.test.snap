@@ -29,11 +29,6 @@
                 }
             },
             [
-                "custom",
-                "custom/fakebatch_fakeBatch_b1_b2_filtered.tsv",
-                "custom/genotype_celltype_t1_FoB_filtered.tsv",
-                "custom/genotype_celltype_t1_MZ_fakeBatch_filtered.tsv",
-                "custom/genotype_celltype_t1_t2_filtered.tsv",
                 "other",
                 "other/limma",
                 "other/limma/fakebatch_fakeBatch_b1_b2.MArrayLM.limma.rds",
@@ -105,9 +100,13 @@
                 "tables",
                 "tables/differential",
                 "tables/differential/fakebatch_fakeBatch_b1_b2.limma.results.tsv",
+                "tables/differential/fakebatch_fakeBatch_b1_b2_filtered.tsv",
                 "tables/differential/genotype_celltype_t1_FoB.limma.results.tsv",
+                "tables/differential/genotype_celltype_t1_FoB_filtered.tsv",
                 "tables/differential/genotype_celltype_t1_MZ_fakeBatch.limma.results.tsv",
+                "tables/differential/genotype_celltype_t1_MZ_fakeBatch_filtered.tsv",
                 "tables/differential/genotype_celltype_t1_t2.limma.results.tsv",
+                "tables/differential/genotype_celltype_t1_t2_filtered.tsv",
                 "tables/proteus",
                 "tables/proteus/Celltype",
                 "tables/proteus/Celltype/normalizeMedian.normalized_proteingroups_tab.tsv",
@@ -117,10 +116,6 @@
                 "tables/proteus/fakeBatch/raw_proteingroups_tab.tsv"
             ],
             [
-                "fakebatch_fakeBatch_b1_b2_filtered.tsv:md5,6842d5af760839cda6f23d64a3300a09",
-                "genotype_celltype_t1_FoB_filtered.tsv:md5,941463996b8790278d7062a48fbc3419",
-                "genotype_celltype_t1_MZ_fakeBatch_filtered.tsv:md5,b3120632d1f653e97d18342089157930",
-                "genotype_celltype_t1_t2_filtered.tsv:md5,9db67d9283e7fb2f4f604fd63ec40e4d",
                 "fakebatch_fakeBatch_b1_b2.MArrayLM.limma.rds:md5,f321bf1e4fd44827810df9a9c38776d6",
                 "genotype_celltype_t1_FoB.MArrayLM.limma.rds:md5,4f0cb9d82aa3c0464cee5eca69248589",
                 "genotype_celltype_t1_MZ_fakeBatch.MArrayLM.limma.rds:md5,2021a25cc716b10830ff6851044b6b9d",
@@ -161,9 +156,13 @@
                 "genotype_celltype_t1_MZ_fakeBatch.limma.mean_difference.png:md5,7236512b3247375627c3fc26a0f03bb4",
                 "genotype_celltype_t1_t2.limma.mean_difference.png:md5,c1fa7df4bf312921631f1e9349b43b34",
                 "fakebatch_fakeBatch_b1_b2.limma.results.tsv:md5,2e04750d6c02cf37ed489601980d19b8",
+                "fakebatch_fakeBatch_b1_b2_filtered.tsv:md5,6842d5af760839cda6f23d64a3300a09",
                 "genotype_celltype_t1_FoB.limma.results.tsv:md5,990fa0b6a9618bcb03d4c6726f0d518a",
+                "genotype_celltype_t1_FoB_filtered.tsv:md5,941463996b8790278d7062a48fbc3419",
                 "genotype_celltype_t1_MZ_fakeBatch.limma.results.tsv:md5,a0cd63a2f76307016904a4463e3b1791",
+                "genotype_celltype_t1_MZ_fakeBatch_filtered.tsv:md5,b3120632d1f653e97d18342089157930",
                 "genotype_celltype_t1_t2.limma.results.tsv:md5,8e6f5de58fc478aa954350fc159a9b57",
+                "genotype_celltype_t1_t2_filtered.tsv:md5,9db67d9283e7fb2f4f604fd63ec40e4d",
                 "normalizeMedian.normalized_proteingroups_tab.tsv:md5,154fcd8d23409981b897d153e7b7e34e",
                 "raw_proteingroups_tab.tsv:md5,33a8791f84c676ea1aea4842231acb6a",
                 "normalizeMedian.normalized_proteingroups_tab.tsv:md5,154fcd8d23409981b897d153e7b7e34e",
@@ -174,6 +173,6 @@
             "nf-test": "0.9.0",
             "nextflow": "24.10.2"
         },
-        "timestamp": "2024-12-06T21:19:14.732649677"
+        "timestamp": "2024-12-06T23:59:22.50600673"
     }
 }
