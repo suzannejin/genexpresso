@@ -3,9 +3,7 @@ process SHINYNGS_VALIDATEFOMCOMPONENTS {
     label 'process_single'
 
     conda "${moduleDir}/environment.yml"
-    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/r-shinyngs:2.0.0--r43hdfd78af_0' :
-        'biocontainers/r-shinyngs:2.0.0--r43hdfd78af_0' }"
+    container "community.wave.seqera.io/library/r-shinyngs_r-yaml:aa63537f6db6190c"
 
     input:
     tuple val(meta),  path(sample), path(assay_files)
@@ -30,7 +28,7 @@ process SHINYNGS_VALIDATEFOMCOMPONENTS {
     def feature = feature_meta ? "--feature_metadata '$feature_meta'" : ''
 
     """
-    validate_fom_components.R \\
+    validate_fom_components_yaml.R \\
         --sample_metadata "$sample" \\
         $feature \\
         --assay_files "${assay_files.join(',')}" \\

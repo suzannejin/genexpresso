@@ -11,6 +11,7 @@ nextflow_pipeline {
         when {
             params {
                 outdir        = "$outputDir"
+                contrasts = "/workspace/differentialabundance/testing/files/MaxQuant_contrasts.yaml"
             }
         }
 
