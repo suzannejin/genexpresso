@@ -100,7 +100,7 @@ citations_file = file(params.citations_file, checkIfExists: true)
 
 include { TABULAR_TO_GSEA_CHIP } from '../modules/local/tabular_to_gsea_chip'
 include { FILTER_DIFFTABLE     } from '../modules/local/filter_difftable'
-include { EXPERIMENTAL         } from '../subworkflows/local/experimental/main.nf'
+// include { EXPERIMENTAL         } from '../subworkflows/local/experimental/main.nf'
 
 
 /*
@@ -411,7 +411,6 @@ workflow DIFFERENTIALABUNDANCE {
         ch_differential = Channel.empty()
         ch_processed_matrices = Channel.empty()
         ch_model = Channel.empty()
-    } else {
 
     } else {
         DESEQ2_NORM (
