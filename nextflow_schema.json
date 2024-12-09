@@ -32,7 +32,7 @@
                     "format": "file-path",
                     "exists": true,
                     "mimetype": "text/csv",
-                    "pattern": "^\\S+\\.(csv|tsv|txt)$",
+                    "pattern": "^\\S+\\.(csv|tsv)$",
                     "schema": "assets/schema_input.json",
                     "description": "Path to comma-separated file containing information about the samples in the experiment.",
                     "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row. See [usage docs](https://nf-co.re/differentialabundance/usage#samplesheet-input).",
@@ -42,7 +42,7 @@
                     "type": "string",
                     "description": "A CSV file describing sample contrasts",
                     "help_text": "This file is used to define groups of samples from 'input' to compare.  It must contain at least the columns 'variable', 'reference', 'target' and 'blocking', where 'variable' is a column in the input sample sheet, 'reference' and 'target' are values in that column, and blocking is a colon-separated list of additional 'blocking' variables (can be an empty string)",
-                    "pattern": "^\\S+\\.(csv|tsv|txt)$",
+                    "pattern": "^\\S+\\.(csv|tsv)$",
                     "format": "file-path",
                     "mimetype": "text/csv",
                     "fa_icon": "fas fa-adjust"
@@ -94,11 +94,11 @@
             "properties": {
                 "matrix": {
                     "type": "string",
-                    "description": "TSV-format abundance matrix",
+                    "description": "TSV/CSV-format abundance matrix",
                     "help_text": "For example an expression matrix output from the nf-core/rnaseq workflow. There must be a column in this matrix for every row in the input sample sheet.\n\nNot a required input if providing CEL files for affymetrix preprocessing.",
                     "format": "file-path",
                     "mimetype": "text/tab-separated-values",
-                    "pattern": "^\\S+\\.(tsv|csv|txt)$",
+                    "pattern": "^\\S+\\.(tsv|csv)$|\\S*proteinGroups\\.txt$",
                     "fa_icon": "fas fa-border-all"
                 },
                 "transcript_length_matrix": {
@@ -197,7 +197,7 @@
                 "features": {
                     "type": "string",
                     "mimetype": "text/csv",
-                    "pattern": "^\\S+\\.(csv|tsv|txt)$",
+                    "pattern": "^\\S+\\.(csv|tsv)$",
                     "description": "This parameter allows you to supply your own feature annotations. These can often be automatically derived from the GTF used upstream for RNA-seq, or from the Bioconductor annotation package (for affy arrays). ",
                     "help_text": "This parameter allows you to supply your own feature annotations. These can often be automatically derived from the GTF used upstream for RNA-seq, or from the Bioconductor annotation package (for affy arrays). ",
                     "fa_icon": "fas fa-align-justify"
@@ -396,7 +396,7 @@
                 "exploratory_mad_threshold": {
                     "type": "integer",
                     "default": -5,
-                    "help_text": "MAD = median absolute deviation. A threshold on this value is used to define observations (samples) as outliers, or not, in exploratory plots. Based on the definition at https://wiki.arrayserver.com/wiki/index.php?title=CorrelationQC.pdf. ",
+                    "help_text": "MAD = median absolute deviation. A threshold on this value is used to define observations (samples) as outliers, or not, in exploratory plots. Based on the definition at https://archive.ph/o3thZ. For more on MAD, see https://en.wikipedia.org/wiki/Median_absolute_deviation.",
                     "description": "Threshold on MAD score for outlier identification",
                     "fa_icon": "fas fa-angry"
                 },
@@ -449,6 +449,11 @@
             "description": "Options related to differential operations",
             "default": "",
             "properties": {
+                "differential_use_limma": {
+                    "type": "boolean",
+                    "fa_icon": "fas fa-adjust",
+                    "description": "If true limma will be used for all study_types"
+                },
                 "differential_file_suffix": {
                     "type": "string",
                     "description": "Advanced option: the suffix associated tabular differential results tables. Will by default use the appropriate suffix according to the study_type.",
@@ -656,8 +661,8 @@
             },
             "fa_icon": "fas fa-adjust"
         },
-        "limma_specific_options_microarray_only": {
-            "title": "Limma specific options (microarray only)",
+        "limma_specific_options": {
+            "title": "Limma specific options",
             "type": "object",
             "description": "",
             "default": "",
@@ -746,6 +751,12 @@
                     "default": 1.0,
                     "description": "cutoff value for adjusted p-values. Only genes with lower p-values are listed.",
                     "fa_icon": "fas fa-angle-double-up"
+                },
+                "limma_use_voom": {
+                    "type": "boolean",
+                    "description": "Turns on and off usage of voom normalisation in the Limma module.",
+                    "default": false,
+                    "fa_icon": "far fa-check-square"
                 }
             },
             "fa_icon": "fas fa-border-all"
@@ -1388,7 +1399,7 @@
             "$ref": "#/$defs/deseq2_specific_options_rna_seq_only"
         },
         {
-            "$ref": "#/$defs/limma_specific_options_microarray_only"
+            "$ref": "#/$defs/limma_specific_options"
         },
         {
             "$ref": "#/$defs/propd_specific_options"
