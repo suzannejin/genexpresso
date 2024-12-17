@@ -65,7 +65,7 @@
                 "tables/annotation/normalised.annotation.tsv",
                 "tables/differential",
                 "tables/differential/phenotype_uninvolved_lesional.limma.results.tsv",
-                "tables/differential/phenotype_uninvolved_lesional_filtered.tsv",
+                "tables/differential/phenotype_uninvolved_lesional.limma.results_filtered.tsv",
                 "tables/processed_abundance",
                 "tables/processed_abundance/normalised.matrix.tsv"
             ],
@@ -86,14 +86,14 @@
                 "versions.yml:md5,892774f9d56ba10c8646736b7f777ecc",
                 "normalised.annotation.tsv:md5,40300ae222ae35fa54daf10a1b86e830",
                 "phenotype_uninvolved_lesional.limma.results.tsv:md5,2cfa653fffb034be4b82abf306c87bc5",
-                "phenotype_uninvolved_lesional_filtered.tsv:md5,6a198c35b193bab0b3148d147c7b08e3",
+                "phenotype_uninvolved_lesional.limma.results_filtered.tsv:md5,6a198c35b193bab0b3148d147c7b08e3",
                 "normalised.matrix.tsv:md5,230f87f91c0c1a7e2ab354200c4b978c"
             ]
         ],
         "meta": {
             "nf-test": "0.9.0",
-            "nextflow": "24.10.2"
+            "nextflow": "24.10.3"
         },
-        "timestamp": "2024-12-07T00:05:57.862164141"
+        "timestamp": "2024-12-17T12:14:27.925053664"
     }
 }

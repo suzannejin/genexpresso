@@ -64,9 +64,9 @@
                 "tables",
                 "tables/differential",
                 "tables/differential/treatment_mCherry_hND6_.deseq2.results.tsv",
-                "tables/differential/treatment_mCherry_hND6__filtered.tsv",
+                "tables/differential/treatment_mCherry_hND6_.deseq2.results_filtered.tsv",
                 "tables/differential/treatment_mCherry_hND6_sample_number.deseq2.results.tsv",
-                "tables/differential/treatment_mCherry_hND6_sample_number_filtered.tsv",
+                "tables/differential/treatment_mCherry_hND6_sample_number.deseq2.results_filtered.tsv",
                 "tables/processed_abundance",
                 "tables/processed_abundance/all.normalised_counts.tsv",
                 "tables/processed_abundance/all.vst.tsv"
@@ -91,17 +91,17 @@
                 "app.R:md5,bedcfc45b6cdcc2b8fe3627987e2b17a",
                 "versions.yml:md5,892774f9d56ba10c8646736b7f777ecc",
                 "treatment_mCherry_hND6_.deseq2.results.tsv:md5,d9e894aeb89aa5bc79bf7ce31304d7c0",
-                "treatment_mCherry_hND6__filtered.tsv:md5,630820ec91287d8bcb2e5882431c09c3",
+                "treatment_mCherry_hND6_.deseq2.results_filtered.tsv:md5,630820ec91287d8bcb2e5882431c09c3",
                 "treatment_mCherry_hND6_sample_number.deseq2.results.tsv:md5,02b1c8f3c2987b0cb1a64913dd90bf26",
-                "treatment_mCherry_hND6_sample_number_filtered.tsv:md5,1e1c8edb0aa5acee308bc1fc81d1aa16",
+                "treatment_mCherry_hND6_sample_number.deseq2.results_filtered.tsv:md5,1e1c8edb0aa5acee308bc1fc81d1aa16",
                 "all.normalised_counts.tsv:md5,e960aa685547a3ea778523da84fae136",
                 "all.vst.tsv:md5,ea4e437ee57b2c5ef8c19d427656e3c6"
             ]
         ],
         "meta": {
             "nf-test": "0.9.0",
-            "nextflow": "24.10.2"
+            "nextflow": "24.10.3"
         },
-        "timestamp": "2024-12-07T00:00:59.762011044"
+        "timestamp": "2024-12-17T12:07:42.212193198"
     }
 }

@@ -127,9 +127,9 @@
                 "tables/annotation/Mus_musculus.anno.tsv",
                 "tables/differential",
                 "tables/differential/treatment_mCherry_hND6_.deseq2.results.tsv",
-                "tables/differential/treatment_mCherry_hND6__filtered.tsv",
+                "tables/differential/treatment_mCherry_hND6_.deseq2.results_filtered.tsv",
                 "tables/differential/treatment_mCherry_hND6_sample_number.deseq2.results.tsv",
-                "tables/differential/treatment_mCherry_hND6_sample_number_filtered.tsv",
+                "tables/differential/treatment_mCherry_hND6_sample_number.deseq2.results_filtered.tsv",
                 "tables/processed_abundance",
                 "tables/processed_abundance/all.normalised_counts.tsv",
                 "tables/processed_abundance/all.vst.tsv"
@@ -175,17 +175,17 @@
                 "versions.yml:md5,892774f9d56ba10c8646736b7f777ecc",
                 "Mus_musculus.anno.tsv:md5,c1d7f21e64bd00f845ec6545c123a1fb",
                 "treatment_mCherry_hND6_.deseq2.results.tsv:md5,42ad391a5d3b2e4e7931af3088cc6400",
-                "treatment_mCherry_hND6__filtered.tsv:md5,cd67e101a9f0edf196ee0cd8491f8774",
+                "treatment_mCherry_hND6_.deseq2.results_filtered.tsv:md5,cd67e101a9f0edf196ee0cd8491f8774",
                 "treatment_mCherry_hND6_sample_number.deseq2.results.tsv:md5,b41cbaacd04a25b45295f3f987ff7500",
-                "treatment_mCherry_hND6_sample_number_filtered.tsv:md5,98fa3ec0992859d2a524ecce1259f0ed",
+                "treatment_mCherry_hND6_sample_number.deseq2.results_filtered.tsv:md5,98fa3ec0992859d2a524ecce1259f0ed",
                 "all.normalised_counts.tsv:md5,1d7ad0c02b483f2eff1a5b357a74d011",
                 "all.vst.tsv:md5,a08d06d3c3218619b7bd85beead467bd"
             ]
         ],
         "meta": {
             "nf-test": "0.9.0",
-            "nextflow": "24.10.2"
+            "nextflow": "24.10.3"
         },
-        "timestamp": "2024-12-06T23:53:41.504265683"
+        "timestamp": "2024-12-17T11:56:20.743162854"
     }
 }
