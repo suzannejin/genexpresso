@@ -211,7 +211,7 @@ read_contrasts_yaml <- function(filename,
                         stop(paste("Contrasts file must contain all of", paste(contrast_cols, collapse = ", ")))
                 }
 
-        } else if (grepl("\\.yaml$", filename)) {
+        } else if (grepl("\\.ya?ml$", filename)) {
                 contrasts_yaml <- yaml::read_yaml(filename)
 
                 # Extract contrasts and structure into a data frame
