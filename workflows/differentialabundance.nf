@@ -98,8 +98,8 @@ citations_file = file(params.citations_file, checkIfExists: true)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { TABULAR_TO_GSEA_CHIP } from '../modules/local/tabular_to_gsea_chip'
-include { FILTER_DIFFTABLE } from '../modules/local/filter_difftable'
+include { TABULAR_TO_GSEA_CHIP           } from '../modules/local/tabulartogseachip'
+include { CUSTOM_FILTERDIFFERENTIALTABLE } from '../modules/nf-core/custom/filterdifferentialtable/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -413,10 +413,12 @@ workflow DIFFERENTIALABUNDANCE {
     ch_logfc = Channel.value([ params.differential_fc_column, params.differential_min_fold_change ])
     ch_padj = Channel.value([ params.differential_qval_column, params.differential_max_qval ])
 
-    FILTER_DIFFTABLE(
+    CUSTOM_FILTERDIFFERENTIALTABLE(
         ch_differential,
-        ch_logfc,
-        ch_padj
+        ch_logfc.map{it[0]},
+        ch_logfc.map{it[1]},
+        ch_padj.map{it[0]},
+        ch_padj.map{it[1]}
     )
 
     // Run a gene set analysis where directed
@@ -480,7 +482,7 @@ workflow DIFFERENTIALABUNDANCE {
     if (params.gprofiler2_run) {
 
         // For gprofiler2, use only features that are considered differential
-        ch_filtered_diff = FILTER_DIFFTABLE.out.filtered
+        ch_filtered_diff = CUSTOM_FILTERDIFFERENTIALTABLE.out.filtered
 
         if (!params.gprofiler2_background_file) {
             // If deactivated, use empty list as "background"
