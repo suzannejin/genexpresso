@@ -47,7 +47,7 @@ RNA-seq with deseq2:
 ```bash
  nextflow run nf-core/differentialabundance \
      --input samplesheet.csv \
-     --contrasts contrasts.csv \
+     --contrasts contrasts.yaml \
      --matrix assay_matrix.tsv \
      --gtf mouse.gtf \
      --outdir <OUTDIR>  \
@@ -65,7 +65,7 @@ RNA-seq limma+voom:
 ```bash
  nextflow run nf-core/differentialabundance \
      --input samplesheet.csv \
-     --contrasts contrasts.csv \
+     --contrasts contrasts.yaml \
      --matrix assay_matrix.tsv \
      --gtf mouse.gtf \
      --outdir <OUTDIR>  \
@@ -85,7 +85,7 @@ Affymetrix microarray:
 ```bash
  nextflow run nf-core/differentialabundance \
      --input samplesheet.csv \
-     --contrasts contrasts.csv \
+     --contrasts contrasts.yaml \
      --affy_cel_files_archive cel_files.tar \
      --outdir <OUTDIR>  \
      -profile affy,<docker/singularity/podman/shifter/charliecloud/conda/institute>

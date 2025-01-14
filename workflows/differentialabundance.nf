@@ -186,7 +186,6 @@ workflow DIFFERENTIALABUNDANCE {
         // We'll be running Proteus once per unique contrast variable to generate plots
         // TODO: there should probably be a separate plotting module in proteus to simplify this
 
-        // SUPPORT BOTH YAML AND CSV CONTRASTS FILE
         if (params.contrasts.endsWith(".yaml") || params.contrasts.endsWith(".yml")) {
             ch_contrast_variables = ch_contrasts_file
                 .map { entry ->
@@ -199,15 +198,6 @@ workflow DIFFERENTIALABUNDANCE {
                 }
                 .flatten()
                 .unique() // Uniquify to keep each contrast variable only once (in case it exists in multiple lines for blocking etc.)
-        } else if (params.contrasts.endsWith(".csv")) {
-            //csv contrasts file processing
-            ch_contrast_variables = ch_contrasts_file
-                .splitCsv(header:true, sep:(params.contrasts.endsWith('csv') ? ',' : '\t'))
-                .map{ it.tail().first() }
-                .map{
-                    tuple('id': it.variable)
-                }
-                .unique()
         }
 
         ch_contrast_variables.dump(tag:"ch_contrasts_variables")
