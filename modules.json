@@ -15,6 +15,11 @@
                         "git_sha": "666652151335353eef2fcd58880bcef5bc2928e1",
                         "installed_by": ["modules"]
                     },
+                    "custom/filterdifferentialtable": {
+                        "branch": "master",
+                        "git_sha": "833a65446ea117d092d4940f098236b6766e7aac",
+                        "installed_by": ["modules"]
+                    },
                     "custom/matrixfilter": {
                         "branch": "master",
                         "git_sha": "666652151335353eef2fcd58880bcef5bc2928e1",

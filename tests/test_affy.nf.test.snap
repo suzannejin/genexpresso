@@ -21,7 +21,7 @@
                     "r-shinyngs": "2.1.0"
                 },
                 "TABULAR_TO_GSEA_CHIP": {
-                    "bash": "4.2.25 3"
+                    "bash": "5.2.21 3"
                 },
                 "VALIDATOR": {
                     "r-shinyngs": "2.1.0"

@@ -1,11 +1,10 @@
 process TABULAR_TO_GSEA_CHIP {
 
+    tag "$id"
     label 'process_single'
 
-    conda "conda-forge::gawk=5.1.0"
-    container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/gawk:5.1.0' :
-        'biocontainers/gawk:5.1.0' }"
+    conda "${moduleDir}/environment.yml"
+    container "community.wave.seqera.io/library/gawk:5.1.0--fa97c4ccf4cfbc4b"
 
     input:
     path tsv
@@ -41,4 +40,15 @@ process TABULAR_TO_GSEA_CHIP {
         bash: \$(echo \$(bash --version | grep -Eo 'version [[:alnum:].]+' | sed 's/version //'))
     END_VERSIONS
     """
+
+    stub:
+    """
+    touch stub.chip
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        bash: \$(echo \$(bash --version | grep -Eo 'version [[:alnum:].]+' | sed 's/version //'))
+    END_VERSIONS
+    """
+
 }
