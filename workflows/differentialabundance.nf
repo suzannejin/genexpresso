@@ -516,9 +516,9 @@ workflow DIFFERENTIALABUNDANCE {
     // For geoquery we've done no matrix processing and been supplied with the
     // normalised matrix, which can be passed through to downstream analysis
 
-    if(params.study_type == "geo_soft_file") {
+    if (params.study_type == "geo_soft_file") {
         ch_mat = ch_norm
-    }else{
+    } else {
         ch_mat = ch_raw.combine(ch_processed_matrices)
     }
 
@@ -593,7 +593,7 @@ workflow DIFFERENTIALABUNDANCE {
 
     // Run IMMUNEDECONV
     if (params.immunedeconv_run){
-        matrix_file =file(params.matrix, checkIfExists:true)
+        matrix_file = file(params.matrix, checkIfExists:true)
         IMMUNEDECONV(
             [ [id:matrix_file.baseName], matrix_file, params.immunedeconv_method, params.immunedeconv_function ],
             params.features_name_col
