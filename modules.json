@@ -17,7 +17,7 @@
                     },
                     "custom/filterdifferentialtable": {
                         "branch": "master",
-                        "git_sha": "833a65446ea117d092d4940f098236b6766e7aac",
+                        "git_sha": "045f0fbb65edaff2ca5002754dfa767d93551c66",
                         "installed_by": ["abundance_differential_filter", "modules"]
                     },
                     "custom/matrixfilter": {
@@ -32,17 +32,17 @@
                     },
                     "custom/tabulartogseacls": {
                         "branch": "master",
-                        "git_sha": "666652151335353eef2fcd58880bcef5bc2928e1",
+                        "git_sha": "c835e1647a2e16237ae9d1db3d27351297f290c5",
                         "installed_by": ["differential_functional_enrichment", "modules"]
                     },
                     "custom/tabulartogseagct": {
                         "branch": "master",
-                        "git_sha": "666652151335353eef2fcd58880bcef5bc2928e1",
+                        "git_sha": "c835e1647a2e16237ae9d1db3d27351297f290c5",
                         "installed_by": ["differential_functional_enrichment", "modules"]
                     },
                     "deseq2/differential": {
                         "branch": "master",
-                        "git_sha": "9326d73af3fbe2ee90d9ce0a737461a727c5118e",
+                        "git_sha": "c038be5b58c111787d2fab1c4376085923a52b1b",
                         "installed_by": ["abundance_differential_filter", "modules"]
                     },
                     "geoquery/getgeo": {
@@ -52,12 +52,12 @@
                     },
                     "gprofiler2/gost": {
                         "branch": "master",
-                        "git_sha": "666652151335353eef2fcd58880bcef5bc2928e1",
+                        "git_sha": "6506b7bc2a369f0c21dc4fbc5e8d2af6c3e1a90b",
                         "installed_by": ["differential_functional_enrichment", "modules"]
                     },
                     "gsea/gsea": {
                         "branch": "master",
-                        "git_sha": "666652151335353eef2fcd58880bcef5bc2928e1",
+                        "git_sha": "6506b7bc2a369f0c21dc4fbc5e8d2af6c3e1a90b",
                         "installed_by": ["differential_functional_enrichment", "modules"]
                     },
                     "gunzip": {
@@ -72,7 +72,7 @@
                     },
                     "limma/differential": {
                         "branch": "master",
-                        "git_sha": "136f443c0a6d5c526410c7c9b73ce51ef457c341",
+                        "git_sha": "784b3a38aeafe9bb7e38f1369704dd5e6bcaf9f0",
                         "installed_by": ["abundance_differential_filter", "modules"]
                     },
                     "propr/grea": {
