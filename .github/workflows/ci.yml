@@ -39,11 +39,11 @@ jobs:
           - "latest-stable"
         test_profile:
           - "test"
-          - "test_nogtf"
-          - "test_affy"
-          - "test_maxquant"
-          - "test_soft"
-          - "test_experimental"
+          - "nogtf"
+          - "affy"
+          - "maxquant"
+          - "soft"
+          - "rnaseq_limma"
         compute_profile:
           - "docker"
           - "singularity"

@@ -43,10 +43,10 @@ if (params.study_type == 'affy_array') {
         error("Query GSE not specified or features metadata columns not specified")
     }
 } else {
-    // If this is not microarray data or maxquant output, and this an RNA-seq dataset or experimental analysis,
+    // If this is not microarray data or maxquant output, and this an RNA-seq dataset,
     // then assume we're reading from a matrix
 
-    if (params.study_type in ["rnaseq", "experimental"] && params.matrix) {
+    if (params.study_type == "rnaseq" && params.matrix) {
         matrix_file = file(params.matrix, checkIfExists: true)
         ch_in_raw = Channel.of([ exp_meta, matrix_file])
     } else {
@@ -61,8 +61,8 @@ if (params.control_features) { ch_control_features = Channel.of([ exp_meta, file
 
 def run_gene_set_analysis = params.gsea_run || params.gprofiler2_run
 
-ch_gene_sets = Channel.of([])    // For methods that can run without gene sets
 if (run_gene_set_analysis) {
+    ch_gene_sets = Channel.of([])    // For methods that can run without gene sets
     if (params.gene_sets_files) {
         gene_sets_files = params.gene_sets_files.split(",")
         ch_gene_sets = Channel.of(gene_sets_files).map { file(it, checkIfExists: true) }
@@ -98,10 +98,8 @@ citations_file = file(params.citations_file, checkIfExists: true)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { TABULAR_TO_GSEA_CHIP } from '../modules/local/tabular_to_gsea_chip'
-include { FILTER_DIFFTABLE     } from '../modules/local/filter_difftable'
-include { EXPERIMENTAL         } from '../subworkflows/local/experimental/main.nf'
-
+include { TABULAR_TO_GSEA_CHIP           } from '../modules/local/tabulartogseachip'
+include { CUSTOM_FILTERDIFFERENTIALTABLE } from '../modules/nf-core/custom/filterdifferentialtable/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -135,8 +133,6 @@ include { GEOQUERY_GETGEO                                   } from '../modules/n
 include { ZIP as MAKE_REPORT_BUNDLE                         } from '../modules/nf-core/zip/main'
 include { IMMUNEDECONV                                      } from '../modules/nf-core/immunedeconv/main'
 include { softwareVersionsToYAML                            } from '../subworkflows/nf-core/utils_nfcore_pipeline'
-
-include { samplesheetToList } from 'plugin/nf-schema'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -311,7 +307,7 @@ workflow DIFFERENTIALABUNDANCE {
         ch_norm = VALIDATOR.out.assays
     }
 
-    if(params.study_type !in ['rnaseq', 'experimental']) {
+    if(params.study_type != 'rnaseq') {
         ch_matrix_for_differential = ch_norm
     }
     else{
@@ -370,52 +366,6 @@ workflow DIFFERENTIALABUNDANCE {
         ch_processed_matrices = ch_norm
             .map{ it.tail() }
             .first()
-<<<<<<< HEAD
-=======
-    } else if (params.study_type == 'experimental') {
-
-        // Convert the toolsheet.csv in a channel with the proper format
-        ch_tools = Channel.fromList(samplesheetToList(params.tools, './assets/schema_tools.json'))
-                    .map {
-                        it ->
-                            def pathway_name     = it[0].subMap(["pathway_name"])
-                            def differential_map = it[0].subMap(["diff_method","args_diff"])
-                            def correlation_map  = it[0].subMap(["cor_method","args_cor"])
-                            def enrichment_map   = it[0].subMap(["enr_method","args_enr"])
-                            [ pathway_name, differential_map, correlation_map, enrichment_map ]
-                    }.unique()
-
-        // Filter the tools to the pathway(s) of interest, or run everything if requested
-        if (params.pathway == "all") {
-            ch_tools
-                .set{ ch_tools }
-        } else {
-            ch_tools
-                .filter{
-                    it[0]["pathway_name"] in params.pathway.tokenize(',')
-                }
-                .set{ ch_tools }
-        }
-
-        EXPERIMENTAL(
-            ch_contrasts,
-            VALIDATOR.out.sample_meta,
-            VALIDATOR.out.feature_meta,
-            ch_gene_sets,
-            CUSTOM_MATRIXFILTER.out.filtered,
-            ch_tools,
-            ch_transcript_lengths,
-            ch_control_features
-        )
-
-        // TODO for the moment, these channels are allocated to not breaking the next part.
-        // they have to be properly handled afterwards
-        ch_norm = Channel.empty()
-        ch_differential = Channel.empty()
-        ch_processed_matrices = Channel.empty()
-        ch_model = Channel.empty()
-    } else {
->>>>>>> origin/dev-ratio
 
     } else {
         DESEQ2_NORM (
@@ -546,6 +496,7 @@ workflow DIFFERENTIALABUNDANCE {
         }
 
         // For gprofiler2, token and organism have priority and will override a gene_sets file
+
         GPROFILER2_GOST(
             ch_filtered_diff,
             ch_gene_sets.first(),

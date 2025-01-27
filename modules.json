@@ -70,11 +70,6 @@
                         "git_sha": "136f443c0a6d5c526410c7c9b73ce51ef457c341",
                         "installed_by": ["modules"]
                     },
-                    "mygene": {
-                        "branch": "master",
-                        "git_sha": "82024cf6325d2ee194e7f056d841ecad2f6856e9",
-                        "installed_by": ["modules"]
-                    },
                     "proteus/readproteingroups": {
                         "branch": "master",
                         "git_sha": "666652151335353eef2fcd58880bcef5bc2928e1",
