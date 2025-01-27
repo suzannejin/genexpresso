@@ -98,8 +98,6 @@ citations_file = file(params.citations_file, checkIfExists: true)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { TABULAR_TO_GSEA_CHIP           } from '../modules/local/tabulartogseachip'
-include { CUSTOM_FILTERDIFFERENTIALTABLE } from '../modules/nf-core/custom/filterdifferentialtable/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -120,11 +118,13 @@ include { DESEQ2_DIFFERENTIAL as DESEQ2_NORM                } from '../modules/n
 include { DESEQ2_DIFFERENTIAL                               } from '../modules/nf-core/deseq2/differential/main'
 include { LIMMA_DIFFERENTIAL                                } from '../modules/nf-core/limma/differential/main'
 include { CUSTOM_MATRIXFILTER                               } from '../modules/nf-core/custom/matrixfilter/main'
+include { CUSTOM_FILTERDIFFERENTIALTABLE                    } from '../modules/nf-core/custom/filterdifferentialtable/main'
 include { ATLASGENEANNOTATIONMANIPULATION_GTF2FEATUREANNOTATION as GTF_TO_TABLE } from '../modules/nf-core/atlasgeneannotationmanipulation/gtf2featureannotation/main'
 include { GSEA_GSEA                                         } from '../modules/nf-core/gsea/gsea/main'
 include { GPROFILER2_GOST                                   } from '../modules/nf-core/gprofiler2/gost/main'
 include { CUSTOM_TABULARTOGSEAGCT                           } from '../modules/nf-core/custom/tabulartogseagct/main'
 include { CUSTOM_TABULARTOGSEACLS                           } from '../modules/nf-core/custom/tabulartogseacls/main'
+include { CUSTOM_TABULARTOGSEACHIP                          } from '../modules/nf-core/custom/tabulartogseachip/main'
 include { RMARKDOWNNOTEBOOK                                 } from '../modules/nf-core/rmarkdownnotebook/main'
 include { AFFY_JUSTRMA as AFFY_JUSTRMA_RAW                  } from '../modules/nf-core/affy/justrma/main'
 include { AFFY_JUSTRMA as AFFY_JUSTRMA_NORM                 } from '../modules/nf-core/affy/justrma/main'
@@ -411,15 +411,13 @@ workflow DIFFERENTIALABUNDANCE {
     }
 
     // We'll use a local module to filter the differential tables and create output files that contain only differential features
-    ch_logfc = Channel.value([ params.differential_fc_column, params.differential_min_fold_change ])
-    ch_padj = Channel.value([ params.differential_qval_column, params.differential_max_qval ])
+    ch_logfc = Channel.value([ params.differential_fc_column, params.differential_min_fold_change, '>=' ])
+    ch_padj = Channel.value([ params.differential_qval_column, params.differential_max_qval, '<=' ])
 
     CUSTOM_FILTERDIFFERENTIALTABLE(
         ch_differential,
-        ch_logfc.map{it[0]},
-        ch_logfc.map{it[1]},
-        ch_padj.map{it[0]},
-        ch_padj.map{it[1]}
+        ch_logfc,
+        ch_padj
     )
 
     // Run a gene set analysis where directed
@@ -445,8 +443,8 @@ workflow DIFFERENTIALABUNDANCE {
 
         CUSTOM_TABULARTOGSEACLS(ch_contrasts_and_samples)
 
-        TABULAR_TO_GSEA_CHIP(
-            VALIDATOR.out.feature_meta.map{ it[1] },
+        CUSTOM_TABULARTOGSEACHIP(
+            VALIDATOR.out.feature_meta,
             [params.features_id_col, params.features_name_col]
         )
 
@@ -463,7 +461,7 @@ workflow DIFFERENTIALABUNDANCE {
         GSEA_GSEA(
             ch_gsea_inputs,
             ch_gsea_inputs.map{ tuple(it[0].reference, it[0].target) }, // *
-            TABULAR_TO_GSEA_CHIP.out.chip.first()
+            CUSTOM_TABULARTOGSEACHIP.out.chip.first()
         )
 
         // * Note: GSEA module currently uses a value channel for the mandatory
@@ -476,7 +474,7 @@ workflow DIFFERENTIALABUNDANCE {
 
         // Record GSEA versions
         ch_versions = ch_versions
-            .mix(TABULAR_TO_GSEA_CHIP.out.versions)
+            .mix(CUSTOM_TABULARTOGSEACHIP.out.versions)
             .mix(GSEA_GSEA.out.versions)
     }
 
@@ -499,8 +497,8 @@ workflow DIFFERENTIALABUNDANCE {
 
         GPROFILER2_GOST(
             ch_filtered_diff,
-            ch_gene_sets.first(),
-            ch_background
+            ch_gene_sets.map { it -> [[], it]}.first(),
+            ch_background.map{ it -> [[], it]}.first(),
         )
     }
 
