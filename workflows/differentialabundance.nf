@@ -61,8 +61,8 @@ if (params.control_features) { ch_control_features = Channel.of([ exp_meta, file
 
 def run_gene_set_analysis = params.gsea_run || params.gprofiler2_run
 
+ch_gene_sets = Channel.of([[]])
 if (run_gene_set_analysis) {
-    ch_gene_sets = Channel.of([])    // For methods that can run without gene sets
     if (params.gene_sets_files) {
         gene_sets_files = params.gene_sets_files.split(",")
         ch_gene_sets = Channel.of(gene_sets_files).map { file(it, checkIfExists: true) }
@@ -74,8 +74,6 @@ if (run_gene_set_analysis) {
     } else if (params.gprofiler2_run) {
         if (!params.gprofiler2_token && !params.gprofiler2_organism) {
             error("To run gprofiler2, please provide a run token, GMT file or organism!")
-        } else {
-            ch_gene_sets = [[]]     // For gprofiler2 which calls ch_gene_sets.first()
         }
     }
 }
@@ -421,14 +419,14 @@ workflow DIFFERENTIALABUNDANCE {
 
     // Prepare background file - for the moment it is only needed for gprofiler2
 
-    if (!params.gprofiler2_background_file) {
-        // If deactivated, use empty list as "background"
-        ch_background = []
-    } else if (params.gprofiler2_background_file == "auto") {
-        // If auto, use input matrix as background
-        ch_background = CUSTOM_MATRIXFILTER.out.filtered.map{it.tail()}.first()
-    } else {
-        ch_background = Channel.from(file(params.gprofiler2_background_file, checkIfExists: true))
+    ch_background = Channel.of([[]])
+    if (params.gprofiler2_run) {
+        if (params.gprofiler2_background_file == "auto") {
+            // If auto, use input matrix as background
+            ch_background = CUSTOM_MATRIXFILTER.out.filtered.map{it.tail()}.first()
+        } else {
+            ch_background = Channel.from(file(params.gprofiler2_background_file, checkIfExists: true))
+        }
     }
 
     // Prepare input for functional analysis
