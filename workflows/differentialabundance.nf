@@ -530,7 +530,7 @@ workflow DIFFERENTIALABUNDANCE {
 
     PLOT_DIFFERENTIAL(
         ch_differential_results,
-        ch_all_matrices
+        ch_all_matrices.first()
     )
 
     // Gather software versions
