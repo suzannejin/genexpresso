@@ -186,7 +186,8 @@ workflow ABUNDANCE_DIFFERENTIAL_FILTER {
 
     // other
     normalised_matrix          = ch_normalised_matrix
-    variance_stabilised_matrix = DESEQ2_NORM.out.rlog_counts.mix(DESEQ2_NORM.out.vst_counts)
+    rlog_counts                = DESEQ2_NORM.out.rlog_counts
+    vst_counts                 = DESEQ2_NORM.out.vst_counts
     model                      = ch_model
     versions                   = ch_versions
 }
