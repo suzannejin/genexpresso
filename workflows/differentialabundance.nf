@@ -146,7 +146,38 @@ workflow DIFFERENTIALABUNDANCE {
 
     ch_versions = Channel.empty()
     // Channel for the contrasts file
-    ch_contrasts_file = Channel.from([[exp_meta, file(params.contrasts)]])
+    if (params.contrasts_yml && params.contrasts) {
+        error("Both '--contrasts' and '--contrasts_yml' parameters are set. Please specify only one of these options to define contrasts.")
+    }
+    if (!(params.contrasts_yml || params.contrasts)) {
+        error("Either '--contrasts' and '--contrasts_yml' must be set. Please specify one of these options to define contrasts.")
+    }
+
+    // SUPPORT BOTH YAML AND CSV CONTRASTS FILE
+    if (params.contrasts_yml) {
+        //yaml contrasts file processing
+        ch_contrasts_file = Channel.from([[exp_meta, file(params.contrasts_yml)]])
+        ch_contrast_variables = ch_contrasts_file
+            .map { entry ->
+                def yaml_file = entry[1]
+                def yaml_data = new groovy.yaml.YamlSlurper().parse(yaml_file)
+                yaml_data.contrasts.collect { contrast ->
+                    tuple('id': contrast.comparison[0])
+                }
+            }
+            .flatten()
+            .unique() // Uniquify to keep each contrast variable only once (in case it exists in multiple lines for blocking etc.)
+    } else if (params.contrasts) {
+        //csv contrasts file processing
+        ch_contrasts_file = Channel.from([[exp_meta, file(params.contrasts)]])
+        ch_contrast_variables = ch_contrasts_file
+            .splitCsv(header:true, sep:(params.contrasts.endsWith('csv') ? ',' : '\t'))
+            .map{ it.tail().first() }
+            .map{
+                tuple('id': it.variable)
+            }
+            .unique()
+    }
 
     // If we have affy array data in the form of CEL files we'll be deriving
     // matrix and annotation from them
@@ -186,14 +217,6 @@ workflow DIFFERENTIALABUNDANCE {
 
         // We'll be running Proteus once per unique contrast variable to generate plots
         // TODO: there should probably be a separate plotting module in proteus to simplify this
-
-        ch_contrast_variables = ch_contrasts_file
-            .splitCsv(header:true, sep:(params.contrasts.endsWith('csv') ? ',' : '\t'))
-            .map{ it.tail().first() }
-            .map{
-                tuple('id': it.variable)
-            }
-            .unique()   // uniquify to keep each contrast variable only once (in case it exists in multiple lines for blocking etc.)
 
         // Run proteus to import protein abundances
         PROTEUS(
