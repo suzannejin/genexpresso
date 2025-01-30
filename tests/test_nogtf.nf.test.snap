@@ -70,9 +70,9 @@
                 "tables/processed_abundance/all.vst.tsv"
             ],
             [
-                "treatment_mCherry_hND6_.dds.rld.rds:md5,a02d9865901a10502b23b5c7d0519647",
+                "treatment_mCherry_hND6_.dds.rld.rds:md5,6169c02c9c5dc9bfbd907d1d0ffe5442",
                 "treatment_mCherry_hND6_.deseq2.sizefactors.tsv:md5,402909515e7ae8d53d091bf5ad9bc5fd",
-                "treatment_mCherry_hND6_sample_number.dds.rld.rds:md5,ca190ae16afb2d9fcd5ffca235a97f4f",
+                "treatment_mCherry_hND6_sample_number.dds.rld.rds:md5,4ef00951aa423f2b5d1ab797b16ff20d",
                 "treatment_mCherry_hND6_sample_number.deseq2.sizefactors.tsv:md5,402909515e7ae8d53d091bf5ad9bc5fd",
                 "volcano.png:md5,db4fda5e682a1659af157c11985d0783",
                 "volcano.png:md5,396facf5c1dbe8b445e3360e6280f9c1",
@@ -88,18 +88,18 @@
                 "treatment_mCherry_hND6_sample_number.deseq2.dispersion.png:md5,d0f07f97c7f5c660b173d85b85ed50b9",
                 "app.R:md5,bedcfc45b6cdcc2b8fe3627987e2b17a",
                 "versions.yml:md5,27cf350d1f743e60e64b4434cf6d4687",
-                "treatment_mCherry_hND6_.deseq2.results.tsv:md5,b7fb6767324a12330ea98db8c361f36a",
-                "treatment_mCherry_hND6_.deseq2.results_filtered.tsv:md5,4f4bf48b354616354137435adfac7a35",
-                "treatment_mCherry_hND6_sample_number.deseq2.results.tsv:md5,c33a777473ec045ba11238c6bfdf962e",
-                "treatment_mCherry_hND6_sample_number.deseq2.results_filtered.tsv:md5,0e2f7cc47db20df9473f3a593e218101",
+                "treatment_mCherry_hND6_.deseq2.results.tsv:md5,4726dd3c33edce84d6356079c578bbd4",
+                "treatment_mCherry_hND6_.deseq2.results_filtered.tsv:md5,5c23f53046190eabce927cc968abed34",
+                "treatment_mCherry_hND6_sample_number.deseq2.results.tsv:md5,119c986fd9235ae6a6c88ed1dd4d0a3d",
+                "treatment_mCherry_hND6_sample_number.deseq2.results_filtered.tsv:md5,6d969a3049ba16f8f12fc8abeb2b9899",
                 "all.normalised_counts.tsv:md5,e960aa685547a3ea778523da84fae136",
-                "all.vst.tsv:md5,1567f0aa91af3ffb3be575d17ee69a07"
+                "all.vst.tsv:md5,8e19361180daa5a68de6f099b9093a8c"
             ]
         ],
         "meta": {
             "nf-test": "0.9.2",
             "nextflow": "24.10.4"
         },
-        "timestamp": "2025-01-30T12:36:29.433646372"
+        "timestamp": "2025-01-30T13:58:44.996978342"
     }
 }
