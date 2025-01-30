@@ -436,6 +436,8 @@ workflow DIFFERENTIALABUNDANCE {
     ch_versions = ch_versions
         .mix(ABUNDANCE_DIFFERENTIAL_FILTER.out.versions)
 
+    if (params.study_type == 'rnaseq') ch_norm = ch_differential_norm
+
     // ========================================================================
     // Functional analysis
     // ========================================================================
@@ -455,11 +457,11 @@ workflow DIFFERENTIALABUNDANCE {
     // Prepare input for functional analysis
 
     ch_functional_input = ch_differential_results_filtered.combine(ch_tools.filter{it[1].input_type == 'filtered'})
-        .mix(ch_differential_norm.combine(ch_tools.filter{it[1].input_type == 'norm'}))
+        .mix(ch_norm.combine(ch_tools.filter{it[1].input_type == 'norm'}))
         .combine(ch_gene_sets)
         .combine(ch_background)
         .map { meta, input, tools_differential, tools_functional, gene_sets, background ->
-            if (meta.method_differential == tools_differential.method) {
+            if (!('method_differential' in meta) || (meta.method_differential == tools_differential.method)) {
                 return [meta, input, gene_sets, background, tools_functional.method]
             }
         }
@@ -496,11 +498,12 @@ workflow DIFFERENTIALABUNDANCE {
         }
         .unique()
 
-    // parse matrices
-    // TODO check if the processing of channels below can be simplified
-
-    if (params.study_type == 'rnaseq') {
-        ch_processed_matrices = ch_differential_norm
+    // For geoquery we've done no matrix processing and been supplied with the
+    // normalised matrix, which can be passed through to downstream analysis
+    if (params.study_type == "geo_soft_file") {
+        ch_mat = ch_norm.combine( Channel.of([[],[],[]]) )
+    } else {
+        ch_processed_matrices = ch_norm
             .combine( rlog_counts.ifEmpty([[],[]]) )
             .combine( vst_counts.ifEmpty([[],[]]) )
             .map { meta, norm, meta_rlog, rlog, meta_vst, vst ->
@@ -509,16 +512,6 @@ workflow DIFFERENTIALABUNDANCE {
                 if (meta_vst == [] || meta == meta_vst) matrices += [vst]
                 return matrices   // meta, norm, rlog, vst
             }
-    } else {
-        // TODO check why ch_norm is used instead of ch_differential_norm, when the study is not rnaseq
-        ch_processed_matrices = ch_norm.combine(Channel.of([[],[]]))
-    }
-
-    // For geoquery we've done no matrix processing and been supplied with the
-    // normalised matrix, which can be passed through to downstream analysis
-    if (params.study_type == "geo_soft_file") {
-        ch_mat = ch_norm.combine( Channel.of([[],[],[]]) )
-    } else {
         ch_mat = ch_raw.combine(ch_processed_matrices)
             .map { meta_exp, raw, meta_norm, norm, rlog, vst ->
                 if (meta_norm.subMap(meta_exp.keySet()) == meta_exp) {
