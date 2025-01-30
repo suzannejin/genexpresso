@@ -128,7 +128,7 @@ Full list of features metadata are available on GEO platform pages.
 
 ## Contrasts file
 
-The contrasts file references the observations file to define groups of samples to compare. It can be provided in **either** CSV/TSV or YAML format using the parameters `--contrasts` or `--contrasts_yml`, respectively. 
+The contrasts file references the observations file to define groups of samples to compare. It can be provided in **either** CSV/TSV or YAML format using the parameters `--contrasts` or `--contrasts_yml`, respectively.
 
 ### CSV contrasts file
 
